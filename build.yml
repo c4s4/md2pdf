@@ -1,0 +1,10 @@
+- build:       md2xml
+  description: "Go project"
+  extends:
+  - ":go:go.yml"
+
+- properties:
+    name:       "md2xml"
+    version:    "0.0.1"
+    go_package: "github.com/c4s4"
+
