@@ -103,7 +103,7 @@ Stylesheet to transform an XHTML document to XML one.
   </xsl:template>
 
   <xsl:template match="img">
-    <figure url="{@src}" width="{@width}" height="{@height}"/>
+    <figure url="{@src}"/>
   </xsl:template>
 
   <xsl:template match="em">
