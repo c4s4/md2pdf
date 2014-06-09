@@ -171,13 +171,23 @@ func markdownData(text string) (map[string]string, string) {
 	return data, strings.Join(lines[limit:len(lines)], "\n")
 }
 
-func processFile(filename string) string {
+func escapeXml(source []byte) []byte {
+	s := strings.Replace(string(source), "&", "&amp;", -1)
+	s = strings.Replace(s, "<", "&lt;", -1)
+	return []byte(s)
+}
+
+func processFile(filename string, printXhtml bool) string {
 	source, err := ioutil.ReadFile(filename)
 	if err != nil {
 		panic(err)
 	}
 	data, markdown := markdownData(string(source))
+	source = escapeXml(source)
 	xhtml := markdown2xhtml(markdown)
+	if printXhtml {
+		return string(xhtml)
+	}
 	xmlFile, err := ioutil.TempFile("/tmp", "md2xml-")
 	if err != nil {
 		panic(err)
@@ -189,15 +199,19 @@ func processFile(filename string) string {
 }
 
 func main() {
+	printXhtml := false
 	if len(os.Args) < 2 {
 		fmt.Println(HELP)
 		os.Exit(1)
-	} else if os.Args[1] == "-h" || os.Args[1] == "--help" {
-		fmt.Println(HELP)
-		os.Exit(0)
-	} else {
-		for _, filename := range os.Args[1:len(os.Args)] {
-			fmt.Println(processFile(filename))
+	}
+	for _, arg := range os.Args[1:] {
+		if arg == "-h" || os.Args[1] == "--help" {
+			fmt.Println(HELP)
+			os.Exit(0)
+		} else if arg == "-x" || arg == "--xhtml" {
+			printXhtml = true
+		} else {
+			fmt.Println(processFile(arg, printXhtml))
 		}
 	}
 }
