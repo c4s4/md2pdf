@@ -122,6 +122,10 @@ Stylesheet to transform an XHTML document to XML one.
     <imp><xsl:apply-templates/></imp>
   </xsl:template>
 
+  <xsl:template match="a">
+    <link url="{@href}"><xsl:apply-templates/></link>
+  </xsl:template>
+
 </xsl:stylesheet>`
 	XHTML_HEADER = "<xhtml>\n"
 	XHTML_FOOTER = "\n</xhtml>"
