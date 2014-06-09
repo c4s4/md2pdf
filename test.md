@@ -29,7 +29,7 @@ Code source.
 N'est pas réarrangé et est en fonte fixe.
 ```
 
-![test.jpg]()
+![Image](test.png "image title")
 
 ```
 #!/usr/bin/env ruby
