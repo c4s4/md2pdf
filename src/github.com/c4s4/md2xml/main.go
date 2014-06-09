@@ -66,6 +66,18 @@ Stylesheet to transform an XHTML document to XML one.
     <p><imp><xsl:apply-templates/></imp></p>
   </xsl:template>
 
+  <xsl:template match="p[count(text())=0 and count(code)=1]">
+    <code><xsl:apply-templates select="code"/></code>
+  </xsl:template>
+
+  <xsl:template match="p[count(text())=1 and count(img)=1]">
+    <xsl:apply-templates select="img"/>
+  </xsl:template>
+
+  <xsl:template match="img">
+    <figure url="{src}"/>
+  </xsl:template>
+
   <xsl:template match="p">
     <p><xsl:apply-templates/></p>
   </xsl:template>
@@ -102,20 +114,12 @@ Stylesheet to transform an XHTML document to XML one.
     <source><xsl:apply-templates/></source>
   </xsl:template>
 
-  <xsl:template match="img">
-    <figure url="{@src}"/>
-  </xsl:template>
-
   <xsl:template match="em">
     <term><xsl:apply-templates/></term>
   </xsl:template>
 
   <xsl:template match="strong">
     <imp><xsl:apply-templates/></imp>
-  </xsl:template>
-
-  <xsl:template match="code">
-    <code><xsl:apply-templates/></code>
   </xsl:template>
 
 </xsl:stylesheet>`
@@ -171,10 +175,10 @@ func markdownData(text string) (map[string]string, string) {
 	return data, strings.Join(lines[limit:len(lines)], "\n")
 }
 
-func escapeXml(source []byte) []byte {
-	s := strings.Replace(string(source), "&", "&amp;", -1)
-	s = strings.Replace(s, "<", "&lt;", -1)
-	return []byte(s)
+func escapeXml(source string) string {
+	source = strings.Replace(source, "&", "&amp;", -1)
+	source = strings.Replace(source, "<", "&lt;", -1)
+	return source
 }
 
 func processFile(filename string, printXhtml bool) string {
