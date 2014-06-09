@@ -75,7 +75,7 @@ Stylesheet to transform an XHTML document to XML one.
   </xsl:template>
 
   <xsl:template match="img">
-    <figure url="{src}"/>
+    <figure url="{@src}"/>
   </xsl:template>
 
   <xsl:template match="p">
