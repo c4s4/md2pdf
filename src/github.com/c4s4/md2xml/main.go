@@ -183,7 +183,7 @@ func processFile(filename string, printXhtml bool) string {
 		panic(err)
 	}
 	data, markdown := markdownData(string(source))
-	source = escapeXml(source)
+	markdown = escapeXml(markdown)
 	xhtml := markdown2xhtml(markdown)
 	if printXhtml {
 		return string(xhtml)
