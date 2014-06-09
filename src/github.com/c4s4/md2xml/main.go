@@ -31,15 +31,15 @@ Stylesheet to transform an XHTML document to XML one.
   <!-- catch the root element -->
   <xsl:template match="/xhtml">
     <xsl:text disable-output-escaping="yes">
-    &lt;!DOCTYPE weblog PUBLIC "-//CAFEBABE//DTD weblog 1.0//EN"
-                               "../dtd/weblog.dtd">
+    &lt;!DOCTYPE blog PUBLIC "-//CAFEBABE//DTD blog 1.0//EN"
+                             "../dtd/blog.dtd">
     </xsl:text>
-    <weblog>
+    <blog>
       <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
       <xsl:attribute name="date"><xsl:value-of select="$date"/></xsl:attribute>
       <title><xsl:value-of select="$title"/></title>
       <xsl:apply-templates/>
-    </weblog>
+    </blog>
   </xsl:template>
 
   <xsl:template match="h1">
@@ -67,7 +67,7 @@ Stylesheet to transform an XHTML document to XML one.
   </xsl:template>
 
   <xsl:template match="p[count(text())=0 and count(code)=1]">
-    <code><xsl:apply-templates select="code"/></code>
+    <source><xsl:apply-templates select="code"/></source>
   </xsl:template>
 
   <xsl:template match="p[count(text())=1 and count(img)=1]">
