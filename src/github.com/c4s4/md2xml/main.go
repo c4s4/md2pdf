@@ -41,27 +41,27 @@ Note: this program calls xsltproc that must have been installed.`
   </xsl:template>
 
   <xsl:template match="h1">
-    <p><imp><xsl:apply-templates/></imp></p>
+    <sect><title><xsl:value-of select="text()"/></title></sect>
   </xsl:template>
 
   <xsl:template match="h2">
-    <p><imp><xsl:apply-templates/></imp></p>
+    <sect><title><xsl:value-of select="text()"/></title></sect>
   </xsl:template>
 
   <xsl:template match="h3">
-    <p><imp><xsl:apply-templates/></imp></p>
+    <sect><title><xsl:value-of select="text()"/></title></sect>
   </xsl:template>
 
   <xsl:template match="h4">
-    <p><imp><xsl:apply-templates/></imp></p>
+    <sect><title><xsl:value-of select="text()"/></title></sect>
   </xsl:template>
 
   <xsl:template match="h5">
-    <p><imp><xsl:apply-templates/></imp></p>
+    <sect><title><xsl:value-of select="text()"/></title></sect>
   </xsl:template>
 
   <xsl:template match="h6">
-    <p><imp><xsl:apply-templates/></imp></p>
+    <sect><title><xsl:value-of select="text()"/></title></sect>
   </xsl:template>
 
   <xsl:template match="p[count(text())=0 and count(code)=1]">
@@ -147,30 +147,6 @@ Note: this program calls xsltproc that must have been installed.`
       <title><xsl:value-of select="$title"/></title>
       <xsl:apply-templates/>
     </blog>
-  </xsl:template>
-
-  <xsl:template match="h1">
-    <p><imp><xsl:apply-templates/></imp></p>
-  </xsl:template>
-
-  <xsl:template match="h2">
-    <p><imp><xsl:apply-templates/></imp></p>
-  </xsl:template>
-
-  <xsl:template match="h3">
-    <p><imp><xsl:apply-templates/></imp></p>
-  </xsl:template>
-
-  <xsl:template match="h4">
-    <p><imp><xsl:apply-templates/></imp></p>
-  </xsl:template>
-
-  <xsl:template match="h5">
-    <p><imp><xsl:apply-templates/></imp></p>
-  </xsl:template>
-
-  <xsl:template match="h6">
-    <p><imp><xsl:apply-templates/></imp></p>
   </xsl:template>
 
   <xsl:template match="p[count(text())=0 and count(code)=1]">
