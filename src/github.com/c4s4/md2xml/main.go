@@ -13,12 +13,119 @@ const (
 	HELP = `md2xml [-h] file.md
 Transform a given Markdown file into XML.
 -h        To print this help page.
+-x        Print intermediate XHTML output.
 file.md   The markdown file to convert.
 Note: this program calls xsltproc that must have been installed.`
-	STYLESHEET = `<?xml version="1.0" encoding="utf-8"?>
-<!--
-Stylesheet to transform an XHTML document to XML one.
--->
+	STYLESHEET_ARTICLE = `<?xml version="1.0" encoding="utf-8"?>
+
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                version="1.0">
+
+  <xsl:output method="xml" encoding="UTF-8"/>
+  <xsl:param name="id">ID</xsl:param>
+  <xsl:param name="date">DATE</xsl:param>
+  <xsl:param name="title">TITLE</xsl:param>
+
+  <!-- catch the root element -->
+  <xsl:template match="/xhtml">
+    <xsl:text disable-output-escaping="yes">
+    &lt;!DOCTYPE blog PUBLIC "-//CAFEBABE//DTD blog 1.0//EN"
+                             "../dtd/article.dtd">
+    </xsl:text>
+    <article>
+      <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
+      <xsl:attribute name="date"><xsl:value-of select="$date"/></xsl:attribute>
+      <title><xsl:value-of select="$title"/></title>
+      <xsl:apply-templates/>
+    </article>
+  </xsl:template>
+
+  <xsl:template match="h1">
+    <p><imp><xsl:apply-templates/></imp></p>
+  </xsl:template>
+
+  <xsl:template match="h2">
+    <p><imp><xsl:apply-templates/></imp></p>
+  </xsl:template>
+
+  <xsl:template match="h3">
+    <p><imp><xsl:apply-templates/></imp></p>
+  </xsl:template>
+
+  <xsl:template match="h4">
+    <p><imp><xsl:apply-templates/></imp></p>
+  </xsl:template>
+
+  <xsl:template match="h5">
+    <p><imp><xsl:apply-templates/></imp></p>
+  </xsl:template>
+
+  <xsl:template match="h6">
+    <p><imp><xsl:apply-templates/></imp></p>
+  </xsl:template>
+
+  <xsl:template match="p[count(text())=0 and count(code)=1]">
+    <source><xsl:apply-templates select="code"/></source>
+  </xsl:template>
+
+  <xsl:template match="p[count(text())=1 and count(img)=1]">
+    <xsl:apply-templates select="img"/>
+  </xsl:template>
+
+  <xsl:template match="img">
+    <figure url="{@src}"/>
+  </xsl:template>
+
+  <xsl:template match="p">
+    <p><xsl:apply-templates/></p>
+  </xsl:template>
+
+  <xsl:template match="ul">
+    <list><xsl:apply-templates/></list>
+  </xsl:template>
+
+  <xsl:template match="ol">
+    <enum><xsl:apply-templates/></enum>
+  </xsl:template>
+
+  <xsl:template match="li">
+    <item><xsl:apply-templates/></item>
+  </xsl:template>
+
+  <xsl:template match="table">
+    <table><xsl:apply-templates/></table>
+  </xsl:template>
+
+  <xsl:template match="th">
+    <th><xsl:apply-templates/></th>
+  </xsl:template>
+
+  <xsl:template match="tr">
+    <li><xsl:apply-templates/></li>
+  </xsl:template>
+
+  <xsl:template match="td">
+    <co><xsl:apply-templates/></co>
+  </xsl:template>
+
+  <xsl:template match="pre">
+    <source><xsl:apply-templates/></source>
+  </xsl:template>
+
+  <xsl:template match="em">
+    <term><xsl:apply-templates/></term>
+  </xsl:template>
+
+  <xsl:template match="strong">
+    <imp><xsl:apply-templates/></imp>
+  </xsl:template>
+
+  <xsl:template match="a">
+    <link url="{@href}"><xsl:apply-templates/></link>
+  </xsl:template>
+
+</xsl:stylesheet>`
+	STYLESHEET_BLOG = `<?xml version="1.0" encoding="utf-8"?>
 
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 version="1.0">
@@ -131,12 +238,16 @@ Stylesheet to transform an XHTML document to XML one.
 	XHTML_FOOTER = "\n</xhtml>"
 )
 
-func processXsl(xmlFile string, data map[string]string) []byte {
+func processXsl(xmlFile string, data map[string]string, article bool) []byte {
 	xslFile, err := ioutil.TempFile("/tmp", "md2xsl-")
 	if err != nil {
 		panic(err)
 	}
-	err = ioutil.WriteFile(xslFile.Name(), []byte(STYLESHEET), 0755)
+	stylesheet := STYLESHEET_ARTICLE
+	if !article {
+		stylesheet = STYLESHEET_BLOG
+	}
+	err = ioutil.WriteFile(xslFile.Name(), []byte(stylesheet), 0755)
 	if err != nil {
 		panic(err)
 	}
@@ -185,7 +296,7 @@ func escapeXml(source string) string {
 	return source
 }
 
-func processFile(filename string, printXhtml bool) string {
+func processFile(filename string, printXhtml bool, article bool) string {
 	source, err := ioutil.ReadFile(filename)
 	if err != nil {
 		panic(err)
@@ -202,12 +313,13 @@ func processFile(filename string, printXhtml bool) string {
 	}
 	defer os.Remove(xmlFile.Name())
 	ioutil.WriteFile(xmlFile.Name(), xhtml, 0755)
-	result := processXsl(xmlFile.Name(), data)
+	result := processXsl(xmlFile.Name(), data, article)
 	return string(result)
 }
 
 func main() {
-	printXhtml := false
+	xhtml := false
+	article := false
 	if len(os.Args) < 2 {
 		fmt.Println(HELP)
 		os.Exit(1)
@@ -217,9 +329,11 @@ func main() {
 			fmt.Println(HELP)
 			os.Exit(0)
 		} else if arg == "-x" || arg == "--xhtml" {
-			printXhtml = true
+			xhtml = true
+		} else if arg == "-a" || arg == "--article" {
+			article = true
 		} else {
-			fmt.Println(processFile(arg, printXhtml))
+			fmt.Println(processFile(arg, xhtml, article))
 		}
 	}
 }
