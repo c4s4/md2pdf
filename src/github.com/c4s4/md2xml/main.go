@@ -25,18 +25,24 @@ Note: this program calls xsltproc that must have been installed.`
   <xsl:param name="id">ID</xsl:param>
   <xsl:param name="date">DATE</xsl:param>
   <xsl:param name="title">TITLE</xsl:param>
+  <xsl:param name="author">AUTHOR</xsl:param>
+  <xsl:param name="email">EMAIL</xsl:param>
 
   <!-- catch the root element -->
   <xsl:template match="/xhtml">
     <xsl:text disable-output-escaping="yes">
-    &lt;!DOCTYPE blog PUBLIC "-//CAFEBABE//DTD blog 1.0//EN"
+    &lt;!DOCTYPE article PUBLIC "-//CAFEBABE//DTD blog 1.0//EN"
                              "../dtd/article.dtd">
     </xsl:text>
     <article>
       <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
       <xsl:attribute name="date"><xsl:value-of select="$date"/></xsl:attribute>
+      <xsl:attribute name="author"><xsl:value-of select="$author"/></xsl:attribute>
+      <xsl:attribute name="email"><xsl:value-of select="$email"/></xsl:attribute>
       <title><xsl:value-of select="$title"/></title>
-      <xsl:apply-templates/>
+      <text>
+       <xsl:apply-templates/>
+      </text>
     </article>
   </xsl:template>
 
