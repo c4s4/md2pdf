@@ -41,27 +41,27 @@ Note: this program calls xsltproc that must have been installed.`
   </xsl:template>
 
   <xsl:template match="h1">
-    <sect><title><xsl:value-of select="text()"/></title></sect>
+    <sect level="1"><title><xsl:value-of select="."/></title></sect>
   </xsl:template>
 
   <xsl:template match="h2">
-    <sect><title><xsl:value-of select="text()"/></title></sect>
+    <sect level="2"><title><xsl:value-of select="."/></title></sect>
   </xsl:template>
 
   <xsl:template match="h3">
-    <sect><title><xsl:value-of select="text()"/></title></sect>
+    <sect level="3"><title><xsl:value-of select="."/></title></sect>
   </xsl:template>
 
   <xsl:template match="h4">
-    <sect><title><xsl:value-of select="text()"/></title></sect>
+    <sect level="4"><title><xsl:value-of select="."/></title></sect>
   </xsl:template>
 
   <xsl:template match="h5">
-    <sect><title><xsl:value-of select="text()"/></title></sect>
+    <sect level="5"><title><xsl:value-of select="."/></title></sect>
   </xsl:template>
 
   <xsl:template match="h6">
-    <sect><title><xsl:value-of select="text()"/></title></sect>
+    <sect level="6"><title><xsl:value-of select="."/></title></sect>
   </xsl:template>
 
   <xsl:template match="p[count(text())=0 and count(code)=1]">
