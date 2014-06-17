@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/russross/blackfriday"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -251,8 +250,18 @@ func processXsl(xmlFile string, data map[string]string, article bool) []byte {
 }
 
 func markdown2xhtml(markdown string) []byte {
-	xhtml := blackfriday.MarkdownBasic([]byte(markdown))
-	return []byte(XHTML_HEADER + string(xhtml) + XHTML_FOOTER)
+	mdFile, err := ioutil.TempFile("/tmp", "md2xsl-")
+	if err != nil {
+		panic(err)
+	}
+	defer os.Remove(mdFile.Name())
+	ioutil.WriteFile(mdFile.Name(), []byte(markdown), 0x755)
+	command := exec.Command("pandoc", mdFile.Name(), "-f", "markdown", "-t", "html")
+	result, err := command.CombinedOutput()
+	if err != nil {
+		panic(err)
+	}
+	return []byte(XHTML_HEADER + string(result) + XHTML_FOOTER)
 }
 
 func markdownData(text string) (map[string]string, string) {
