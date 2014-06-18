@@ -255,6 +255,7 @@ func processXsl(xmlFile string, data map[string]string, article bool) []byte {
 	command := exec.Command("xsltproc", params...)
 	result, err := command.CombinedOutput()
 	if err != nil {
+	 print(result)
 		panic(err)
 	}
 	return result
