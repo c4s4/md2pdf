@@ -78,7 +78,18 @@ Note: this program calls xsltproc that must have been installed.`
   </xsl:template>
 
   <xsl:template match="img">
-    <figure url="{@src}"/>
+    <figure url="{@src}">
+      <xsl:if test="@alt">
+        <xsl:attribute name="title">
+          <xsl:value-of select="{@alt}"/>
+        </xsl:attribute>
+      </xsl:if>
+      <xsl:if test="@title">
+        <xsl:attribute name="title2">
+          <xsl:value-of select="{@title}"/>
+        </xsl:attribute>
+      </xsl:if>
+    </figure>
   </xsl:template>
 
   <xsl:template match="p">
