@@ -69,6 +69,9 @@ Note: this program calls xsltproc that must have been installed.`
     <sect level="6"><title><xsl:value-of select="."/></title></sect>
   </xsl:template>
 
+  <xsl:template match="p[@class='caption']">
+  </xsl:template>
+
   <xsl:template match="p[count(text())=0 and count(code)=1]">
     <source><xsl:apply-templates select="code"/></source>
   </xsl:template>
@@ -81,12 +84,12 @@ Note: this program calls xsltproc that must have been installed.`
     <figure url="{@src}">
       <xsl:if test="@alt">
         <xsl:attribute name="title">
-          <xsl:value-of select="{@alt}"/>
+          <xsl:value-of select="@alt"/>
         </xsl:attribute>
       </xsl:if>
       <xsl:if test="@title">
-        <xsl:attribute name="title2">
-          <xsl:value-of select="{@title}"/>
+        <xsl:attribute name="title">
+          <xsl:value-of select="@title"/>
         </xsl:attribute>
       </xsl:if>
     </figure>
@@ -155,7 +158,7 @@ Note: this program calls xsltproc that must have been installed.`
   <xsl:template match="/xhtml">
     <xsl:text disable-output-escaping="yes">
     &lt;!DOCTYPE blog PUBLIC "-//CAFEBABE//DTD blog 1.0//EN"
-                             "../dtd/blog.dtd">
+                          "../dtd/blog.dtd">
     </xsl:text>
     <blog>
       <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
@@ -163,6 +166,33 @@ Note: this program calls xsltproc that must have been installed.`
       <title><xsl:value-of select="$title"/></title>
       <xsl:apply-templates/>
     </blog>
+  </xsl:template>
+
+  <xsl:template match="h1">
+    <p><imp><xsl:value-of select="."/></imp></p>
+  </xsl:template>
+
+  <xsl:template match="h2">
+    <p><imp><xsl:value-of select="."/></imp></p>
+  </xsl:template>
+
+  <xsl:template match="h3">
+    <p><imp><xsl:value-of select="."/></imp></p>
+  </xsl:template>
+
+  <xsl:template match="h4">
+    <p><imp><xsl:value-of select="."/></imp></p>
+  </xsl:template>
+
+  <xsl:template match="h5">
+    <p><imp><xsl:value-of select="."/></imp></p>
+  </xsl:template>
+
+  <xsl:template match="h6">
+    <p><imp><xsl:value-of select="."/></imp></p>
+  </xsl:template>
+
+  <xsl:template match="p[@class='caption']">
   </xsl:template>
 
   <xsl:template match="p[count(text())=0 and count(code)=1]">
@@ -174,7 +204,18 @@ Note: this program calls xsltproc that must have been installed.`
   </xsl:template>
 
   <xsl:template match="img">
-    <figure url="{@src}"/>
+    <figure url="{@src}">
+      <xsl:if test="@alt">
+        <xsl:attribute name="title">
+          <xsl:value-of select="@alt"/>
+        </xsl:attribute>
+      </xsl:if>
+      <xsl:if test="@title">
+        <xsl:attribute name="title">
+          <xsl:value-of select="@title"/>
+        </xsl:attribute>
+      </xsl:if>
+    </figure>
   </xsl:template>
 
   <xsl:template match="p">
