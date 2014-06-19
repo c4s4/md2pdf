@@ -82,15 +82,8 @@ Note: this program calls xsltproc that must have been installed.`
 
   <xsl:template match="img">
     <figure url="{@src}">
-      <xsl:if test="@alt">
-        <xsl:attribute name="title">
-          <xsl:value-of select="@alt"/>
-        </xsl:attribute>
-      </xsl:if>
       <xsl:if test="@title">
-        <xsl:attribute name="title">
-          <xsl:value-of select="@title"/>
-        </xsl:attribute>
+        <title><xsl:value-of select="@title"/></title>
       </xsl:if>
     </figure>
   </xsl:template>
@@ -205,15 +198,8 @@ Note: this program calls xsltproc that must have been installed.`
 
   <xsl:template match="img">
     <figure url="{@src}">
-      <xsl:if test="@alt">
-        <xsl:attribute name="title">
-          <xsl:value-of select="@alt"/>
-        </xsl:attribute>
-      </xsl:if>
       <xsl:if test="@title">
-        <xsl:attribute name="title">
-          <xsl:value-of select="@title"/>
-        </xsl:attribute>
+        <title><xsl:value-of select="@title"/></title>
       </xsl:if>
     </figure>
   </xsl:template>
@@ -334,19 +320,12 @@ func markdownData(text string) (map[string]string, string) {
 	return data, strings.Join(lines[limit:len(lines)], "\n")
 }
 
-func escapeXml(source string) string {
-	source = strings.Replace(source, "&", "&amp;", -1)
-	source = strings.Replace(source, "<", "&lt;", -1)
-	return source
-}
-
 func processFile(filename string, printXhtml bool, article bool) string {
 	source, err := ioutil.ReadFile(filename)
 	if err != nil {
 		panic(err)
 	}
 	data, markdown := markdownData(string(source))
-	markdown = escapeXml(markdown)
 	xhtml := markdown2xhtml(markdown)
 	if printXhtml {
 		return string(xhtml)
