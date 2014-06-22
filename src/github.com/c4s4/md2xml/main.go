@@ -13,6 +13,8 @@ const (
 Transform a given Markdown file into XML.
 -h        To print this help page.
 -x        Print intermediate XHTML output.
+-a        Output article (instead of blog entry).
+-s        Print stylesheet used for transformation.
 file.md   The markdown file to convert.
 Note: this program calls xsltproc that must have been installed.`
 	STYLESHEET_ARTICLE = `<?xml version="1.0" encoding="utf-8"?>
@@ -335,6 +337,12 @@ func main() {
 			xhtml = true
 		} else if arg == "-a" || arg == "--article" {
 			article = true
+		} else if arg == "-s" || arg == "--stylesheet" {
+   if article {
+       fmt.Println(STYLESHEET_ARTICLE)
+   } else {
+       fmt.Println(STYLESHEET_BLOG)
+   }
 		} else {
 			fmt.Println(processFile(arg, xhtml, article))
 		}
