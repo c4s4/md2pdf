@@ -284,7 +284,7 @@ func processXsl(xmlFile string, data map[string]string, article bool) []byte {
 	command := exec.Command("xsltproc", params...)
 	result, err := command.CombinedOutput()
 	if err != nil {
-	 print(result)
+	 println(result)
 		panic(err)
 	}
 	return result
@@ -300,6 +300,7 @@ func markdown2xhtml(markdown string) []byte {
 	command := exec.Command("pandoc", mdFile.Name(), "-f", "markdown", "-t", "html")
 	result, err := command.CombinedOutput()
 	if err != nil {
+	 println(result)
 		panic(err)
 	}
 	return []byte(XHTML_HEADER + string(result) + XHTML_FOOTER)
