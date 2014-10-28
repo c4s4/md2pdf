@@ -29,6 +29,7 @@ Note: this program calls xsltproc that must have been installed.`
   <xsl:param name="author">AUTHOR</xsl:param>
   <xsl:param name="email">EMAIL</xsl:param>
   <xsl:param name="lang">LANG</xsl:param>
+  <xsl:param name="toc">TOC</xsl:param>
 
   <!-- catch the root element -->
   <xsl:template match="/xhtml">
@@ -42,6 +43,7 @@ Note: this program calls xsltproc that must have been installed.`
       <xsl:attribute name="author"><xsl:value-of select="$author"/></xsl:attribute>
       <xsl:attribute name="email"><xsl:value-of select="$email"/></xsl:attribute>
       <xsl:attribute name="lang"><xsl:value-of select="$lang"/></xsl:attribute>
+      <xsl:attribute name="toc"><xsl:value-of select="$toc"/></xsl:attribute>
       <title><xsl:value-of select="$title"/></title>
       <text>
        <xsl:apply-templates/>
