@@ -43,7 +43,7 @@ Some special XML characters: < & > " '.
 
 Now, a table:
 
-| header 1 | header2 |
-|----------|---------|
-| Element  | Element |
+header 1  header 2
+--------  --------
+Element   Element 
 
