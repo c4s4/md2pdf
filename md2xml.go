@@ -112,12 +112,16 @@ Note: this program calls xsltproc that must have been installed.`
     <table><xsl:apply-templates/></table>
   </xsl:template>
 
-  <xsl:template match="th">
+  <xsl:template match="tr[count(th)=0]">
+    <li><xsl:apply-templates/></li>
+  </xsl:template>
+
+  <xsl:template match="tr[count(th) &gt; 0]">
     <th><xsl:apply-templates/></th>
   </xsl:template>
 
-  <xsl:template match="tr">
-    <li><xsl:apply-templates/></li>
+  <xsl:template match="th">
+    <co><xsl:apply-templates/></co>
   </xsl:template>
 
   <xsl:template match="td">
@@ -228,12 +232,16 @@ Note: this program calls xsltproc that must have been installed.`
     <table><xsl:apply-templates/></table>
   </xsl:template>
 
-  <xsl:template match="th">
+  <xsl:template match="tr[count(th)=0]">
+    <li><xsl:apply-templates/></li>
+  </xsl:template>
+
+  <xsl:template match="tr[count(th) &gt; 0]">
     <th><xsl:apply-templates/></th>
   </xsl:template>
 
-  <xsl:template match="tr">
-    <li><xsl:apply-templates/></li>
+  <xsl:template match="th">
+    <co><xsl:apply-templates/></co>
   </xsl:template>
 
   <xsl:template match="td">
