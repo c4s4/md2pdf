@@ -28,8 +28,8 @@ Note: this program calls xsltproc that must have been installed.`
   <xsl:param name="title">TITLE</xsl:param>
   <xsl:param name="author">AUTHOR</xsl:param>
   <xsl:param name="email">EMAIL</xsl:param>
-  <xsl:param name="lang">LANG</xsl:param>
-  <xsl:param name="toc">TOC</xsl:param>
+  <xsl:param name="lang">fr</xsl:param>
+  <xsl:param name="toc">yes</xsl:param>
 
   <!-- catch the root element -->
   <xsl:template match="/xhtml">
