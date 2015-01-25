@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"regexp"
 	"strings"
 )
 
@@ -15,6 +16,7 @@ Transform a given Markdown file into XML.
 -x        Print intermediate XHTML output.
 -a        Output article (instead of blog entry).
 -s        Print stylesheet used for transformation.
+-i dir    To indicate image directory.
 file.md   The markdown file to convert.
 Note: this program calls xsltproc that must have been installed.`
 	STYLESHEET_ARTICLE = `<?xml version="1.0" encoding="utf-8"?>
@@ -296,7 +298,7 @@ func processXsl(xmlFile string, data map[string]string, article bool) []byte {
 	command := exec.Command("xsltproc", params...)
 	result, err := command.CombinedOutput()
 	if err != nil {
-        println(result)
+		println(result)
 		panic(err)
 	}
 	return result
@@ -312,7 +314,7 @@ func markdown2xhtml(markdown string) []byte {
 	command := exec.Command("pandoc", mdFile.Name(), "-f", "markdown", "-t", "html")
 	result, err := command.CombinedOutput()
 	if err != nil {
-	 println(result)
+		println(result)
 		panic(err)
 	}
 	return []byte(XHTML_HEADER + string(result) + XHTML_FOOTER)
@@ -335,12 +337,22 @@ func markdownData(text string) (map[string]string, string) {
 	return data, strings.Join(lines[limit:len(lines)], "\n")
 }
 
-func processFile(filename string, printXhtml bool, article bool) string {
+func imageDir(text, imgDir string) string {
+	r := regexp.MustCompile(`!\[(.*?)\]\((.*?/)*(.*?)\)`)
+	if len(imgDir) > 0 {
+		return r.ReplaceAllString(text, "![$1]("+imgDir+"/$3)")
+	} else {
+		return r.ReplaceAllString(text, "![$1]($3)")
+	}
+}
+
+func processFile(filename string, printXhtml bool, article bool, imgDir string) string {
 	source, err := ioutil.ReadFile(filename)
 	if err != nil {
 		panic(err)
 	}
 	data, markdown := markdownData(string(source))
+	markdown = imageDir(markdown, imgDir)
 	xhtml := markdown2xhtml(markdown)
 	if printXhtml {
 		return string(xhtml)
@@ -358,11 +370,13 @@ func processFile(filename string, printXhtml bool, article bool) string {
 func main() {
 	xhtml := false
 	article := false
+	imgDir := ""
+	var file string
 	if len(os.Args) < 2 {
 		fmt.Println(HELP)
 		os.Exit(1)
 	}
-	for _, arg := range os.Args[1:] {
+	for i, arg := range os.Args[1:] {
 		if arg == "-h" || os.Args[1] == "--help" {
 			fmt.Println(HELP)
 			os.Exit(0)
@@ -371,13 +385,16 @@ func main() {
 		} else if arg == "-a" || arg == "--article" {
 			article = true
 		} else if arg == "-s" || arg == "--stylesheet" {
-   if article {
-       fmt.Println(STYLESHEET_ARTICLE)
-   } else {
-       fmt.Println(STYLESHEET_BLOG)
-   }
+			if article {
+				fmt.Println(STYLESHEET_ARTICLE)
+			} else {
+				fmt.Println(STYLESHEET_BLOG)
+			}
+		} else if arg == "-i" || arg == "--image-dir" {
+			imgDir = os.Args[i+1]
 		} else {
-			fmt.Println(processFile(arg, xhtml, article))
+			file = arg
 		}
 	}
+	fmt.Println(processFile(file, xhtml, article, imgDir))
 }
