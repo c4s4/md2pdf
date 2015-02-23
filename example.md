@@ -35,9 +35,7 @@ Ordered list:
 
 Source code:
 
-```
-println("Hello World!")
-```
+    println("Hello World!")
 
 Some special XML characters: < & > " '.
 
@@ -46,4 +44,3 @@ Now, a table:
 header 1  header 2
 --------  --------
 Element   Element 
-
