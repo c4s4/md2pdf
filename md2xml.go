@@ -377,13 +377,19 @@ func main() {
 	article := false
 	imgDir := ""
 	outFile := ""
-	var file string
+	file := ""
 	if len(os.Args) < 2 {
 		fmt.Println(HELP)
 		os.Exit(1)
 	}
-	for i, arg := range os.Args[1:] {
-		if arg == "-h" || os.Args[1] == "--help" {
+	skip := false
+	args := os.Args[1:]
+	for i, arg := range args {
+		if skip {
+			skip = false
+			continue
+		}
+		if arg == "-h" || arg == "--help" {
 			fmt.Println(HELP)
 			os.Exit(0)
 		} else if arg == "-x" || arg == "--xhtml" {
@@ -397,9 +403,11 @@ func main() {
 				fmt.Println(STYLESHEET_BLOG)
 			}
 		} else if arg == "-i" || arg == "--image-dir" {
-			imgDir = os.Args[i+1]
+			imgDir = args[i+1]
+			skip = true
 		} else if arg == "-o" || arg == "--output-file" {
-			outFile = os.Args[i+1]
+			outFile = args[i+1]
+			skip = true
 		} else {
 			file = arg
 		}
