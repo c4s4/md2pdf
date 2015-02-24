@@ -10,15 +10,15 @@ import (
 )
 
 const (
-	HELP = `md2xml [-h] file.md
+	HELP = `md2xml [-h] [-x] [-s] [-a] [-i dir] file.md
 Transform a given Markdown file into XML.
 -h        To print this help page.
 -x        Print intermediate XHTML output.
--a        Output article (instead of blog entry).
 -s        Print stylesheet used for transformation.
+-a        Output article (instead of blog entry).
 -i dir    To indicate image directory.
 file.md   The markdown file to convert.
-Note: this program calls xsltproc that must have been installed.`
+Note: this program calls pandoc and xsltproc that must have been installed.`
 	STYLESHEET_ARTICLE = `<?xml version="1.0" encoding="utf-8"?>
 
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
