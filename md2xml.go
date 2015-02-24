@@ -10,13 +10,14 @@ import (
 )
 
 const (
-	HELP = `md2xml [-h] [-x] [-s] [-a] [-i dir] file.md
+	HELP = `md2xml [-h] [-x] [-s] [-a] [-i dir] [-o file] file.md
 Transform a given Markdown file into XML.
 -h        To print this help page.
 -x        Print intermediate XHTML output.
 -s        Print stylesheet used for transformation.
 -a        Output article (instead of blog entry).
 -i dir    To indicate image directory.
+-o file   The name of the file to output.
 file.md   The markdown file to convert.
 Note: this program calls pandoc and xsltproc that must have been installed.`
 	STYLESHEET_ARTICLE = `<?xml version="1.0" encoding="utf-8"?>
@@ -346,7 +347,7 @@ func imageDir(text, imgDir string) string {
 	}
 }
 
-func processFile(filename string, printXhtml bool, article bool, imgDir string) string {
+func processFile(filename string, printXhtml bool, article bool, imgDir, outFile string) {
 	source, err := ioutil.ReadFile(filename)
 	if err != nil {
 		panic(err)
@@ -355,7 +356,7 @@ func processFile(filename string, printXhtml bool, article bool, imgDir string) 
 	markdown = imageDir(markdown, imgDir)
 	xhtml := markdown2xhtml(markdown)
 	if printXhtml {
-		return string(xhtml)
+		fmt.Println(string(xhtml))
 	}
 	xmlFile, err := ioutil.TempFile("/tmp", "md2xml-")
 	if err != nil {
@@ -364,13 +365,18 @@ func processFile(filename string, printXhtml bool, article bool, imgDir string) 
 	defer os.Remove(xmlFile.Name())
 	ioutil.WriteFile(xmlFile.Name(), xhtml, 0755)
 	result := processXsl(xmlFile.Name(), data, article)
-	return string(result)
+	if len(outFile) > 0 {
+		ioutil.WriteFile(outFile, result, 0755)
+	} else {
+		fmt.Println(string(result))
+	}
 }
 
 func main() {
 	xhtml := false
 	article := false
 	imgDir := ""
+	outFile := ""
 	var file string
 	if len(os.Args) < 2 {
 		fmt.Println(HELP)
@@ -392,9 +398,11 @@ func main() {
 			}
 		} else if arg == "-i" || arg == "--image-dir" {
 			imgDir = os.Args[i+1]
+		} else if arg == "-o" || arg == "--output-file" {
+			outFile = os.Args[i+1]
 		} else {
 			file = arg
 		}
 	}
-	fmt.Println(processFile(file, xhtml, article, imgDir))
+	processFile(file, xhtml, article, imgDir, outFile)
 }

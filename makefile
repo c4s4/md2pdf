@@ -6,6 +6,8 @@ RED=\033[91m
 CLEAR=\033[0m
 
 
+all: test
+
 binary:
 	@echo "$(YELLOW)Building executable$(CLEAR)"
 	go build md2xml.go
@@ -14,5 +16,5 @@ binary:
 
 test: binary
 	@echo "$(YELLOW)Running test$(CLEAR)"
-	$(BUILD_DIR)/md2xml test/example.md > $(BUILD_DIR)/example.xml
+	$(BUILD_DIR)/md2xml -o $(BUILD_DIR)/example.xml test/example.md
 	xmllint --noout $(BUILD_DIR)/example.xml
