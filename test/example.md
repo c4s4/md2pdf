@@ -5,10 +5,6 @@
 % email:    michel.casabianca@gmail.com
 % keywords: markdown test
 
-# Title first level
-
-## Title second level
-
 Title first level
 =================
 
@@ -19,7 +15,7 @@ Text with *italic*, **bold**, `constant width`. Other _italic_, __bold__ with un
 
 A [Link](http://example.com).
 
-![Image alternative](http://sweetohm.net/public/casa.jpg "Image title")
+![Image alternative](casa.png "Image title")
 
 Unordered list:
 
@@ -44,3 +40,5 @@ Now, a table:
 header 1  header 2
 --------  --------
 Element   Element 
+
+Encoding test: éèàç!
