@@ -283,7 +283,7 @@ func processXsl(xmlFile string, data map[string]string, article bool) []byte {
 	if !article {
 		stylesheet = STYLESHEET_BLOG
 	}
-	err = ioutil.WriteFile(xslFile.Name(), []byte(stylesheet), 0755)
+	err = ioutil.WriteFile(xslFile.Name(), []byte(stylesheet), 0644)
 	if err != nil {
 		panic(err)
 	}
@@ -311,7 +311,7 @@ func markdown2xhtml(markdown string) []byte {
 		panic(err)
 	}
 	defer os.Remove(mdFile.Name())
-	ioutil.WriteFile(mdFile.Name(), []byte(markdown), 0x755)
+	ioutil.WriteFile(mdFile.Name(), []byte(markdown), 0644)
 	command := exec.Command("pandoc", mdFile.Name(), "-f", "markdown", "-t", "html")
 	result, err := command.CombinedOutput()
 	if err != nil {
@@ -363,10 +363,10 @@ func processFile(filename string, printXhtml bool, article bool, imgDir, outFile
 		panic(err)
 	}
 	defer os.Remove(xmlFile.Name())
-	ioutil.WriteFile(xmlFile.Name(), xhtml, 0755)
+	ioutil.WriteFile(xmlFile.Name(), xhtml, 0644)
 	result := processXsl(xmlFile.Name(), data, article)
 	if len(outFile) > 0 {
-		ioutil.WriteFile(outFile, result, 0755)
+		ioutil.WriteFile(outFile, result, 0644)
 	} else {
 		fmt.Println(string(result))
 	}
