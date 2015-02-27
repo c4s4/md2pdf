@@ -11,11 +11,12 @@ import (
 )
 
 const (
-	HELP = `md2pdf [-h] [-x] [-s] [-i dir] [-o file] file.md
+	HELP = `md2pdf [-h] [-x] [-s] [-t] [-i dir] [-o file] file.md
 Transform a given Markdown file into PDF.
 -h        To print this help page.
 -x        Print intermediate XHTML output.
 -s        Print stylesheet used for transformation.
+-t        Print html output.
 -a        Output article (instead of blog entry).
 -i dir    To indicate image directory.
 -o file   The name of the file to output.
@@ -38,6 +39,19 @@ This program calls pandoc, xsltproc and htmldoc that must have been installed.`
 
   <!-- catch the root element -->
   <xsl:template match="/xhtml">
+    <xsl:if test="$title">
+	  <center>
+	    <h1><xsl:value-of select="$title"/></h1>
+	  </center>
+	</xsl:if>
+	<p align="center"><i>
+      <xsl:if test="$author">
+	    <xsl:value-of select="$author"/><br/>
+      </xsl:if>
+	  <xsl:if test="$email">
+		<xsl:value-of select="$email"/>
+	  </xsl:if>
+	</i></p>
     <xsl:apply-templates/>
   </xsl:template>
 
@@ -65,6 +79,12 @@ This program calls pandoc, xsltproc and htmldoc that must have been installed.`
 	  </tr>
 	</table>
 	<p></p>
+  </xsl:template>
+
+  <xsl:template match="div[@class='figure']">
+    <center>
+	  <xsl:apply-templates />
+	</center>
   </xsl:template>
 
 </xsl:stylesheet>`
@@ -144,7 +164,11 @@ func imageDir(text, imgDir string) string {
 	}
 }
 
-func generatePdf(xhtmlFile, outFile string) {
+func generatePdf(xhtmlFile, outFile string, data map[string]string) {
+	toc := "--no-toc"
+	if data["toc"] == "yes" || data["toc"] == "true" || data["toc"] == "1" {
+		toc = "--no-toc"
+	}
 	params := []string{
 		"--outfile", outFile,
 		"--size", "A4",
@@ -163,7 +187,7 @@ func generatePdf(xhtmlFile, outFile string) {
 		"--permissions", "no-modify",
 		"--charset", "iso-8859-1",
 		"--no-title",
-		"--no-toc",
+		toc,
 		"--compression=9",
 		"--embedfonts",
 		"--webpage",
@@ -177,7 +201,7 @@ func generatePdf(xhtmlFile, outFile string) {
 	}
 }
 
-func processFile(filename string, printXhtml bool, imgDir, outFile string) {
+func processFile(filename string, printXhtml, printHtml bool, imgDir, outFile string) {
 	source, err := ioutil.ReadFile(filename)
 	if err != nil {
 		panic(err)
@@ -196,14 +220,23 @@ func processFile(filename string, printXhtml bool, imgDir, outFile string) {
 	defer os.Remove(tmpFile.Name())
 	ioutil.WriteFile(tmpFile.Name(), xhtml, 0644)
 	processXsl(tmpFile.Name(), data)
+	if printHtml {
+		source, err := ioutil.ReadFile(tmpFile.Name())
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println(string(source))
+		return
+	}
 	if len(outFile) == 0 {
 		outFile = filename[0:len(filename)-len(filepath.Ext(filename))] + ".pdf"
 	}
-	generatePdf(tmpFile.Name(), outFile)
+	generatePdf(tmpFile.Name(), outFile, data)
 }
 
 func main() {
 	xhtml := false
+	html := false
 	imgDir := ""
 	outFile := ""
 	file := ""
@@ -226,6 +259,8 @@ func main() {
 		} else if arg == "-s" || arg == "--stylesheet" {
 			fmt.Println(STYLESHEET)
 			os.Exit(0)
+		} else if arg == "-t" || arg == "--html" {
+			html = true
 		} else if arg == "-i" || arg == "--image-dir" {
 			imgDir = args[i+1]
 			skip = true
@@ -236,5 +271,5 @@ func main() {
 			file = arg
 		}
 	}
-	processFile(file, xhtml, imgDir, outFile)
+	processFile(file, xhtml, html, imgDir, outFile)
 }
