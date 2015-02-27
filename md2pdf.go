@@ -5,9 +5,9 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"regexp"
 	"strings"
-	"path/filepath"
 )
 
 const (
@@ -27,7 +27,7 @@ This program calls pandoc, xsltproc and htmldoc that must have been installed.`
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 version="1.0">
 
-  <xsl:output method="xml" encoding="UTF-8"/>
+  <xsl:output method="xml" encoding="ISO-8859-1"/>
   <xsl:param name="id">ID</xsl:param>
   <xsl:param name="date">DATE</xsl:param>
   <xsl:param name="title">TITLE</xsl:param>
@@ -38,126 +38,42 @@ This program calls pandoc, xsltproc and htmldoc that must have been installed.`
 
   <!-- catch the root element -->
   <xsl:template match="/xhtml">
-    <xsl:text disable-output-escaping="yes">
-    &lt;!DOCTYPE article PUBLIC "-//CAFEBABE//DTD blog 1.0//EN"
-                             "../dtd/article.dtd">
-    </xsl:text>
-    <article>
-      <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
-      <xsl:attribute name="date"><xsl:value-of select="$date"/></xsl:attribute>
-      <xsl:attribute name="author"><xsl:value-of select="$author"/></xsl:attribute>
-      <xsl:attribute name="email"><xsl:value-of select="$email"/></xsl:attribute>
-      <xsl:attribute name="lang"><xsl:value-of select="$lang"/></xsl:attribute>
-      <xsl:attribute name="toc"><xsl:value-of select="$toc"/></xsl:attribute>
-      <title><xsl:value-of select="$title"/></title>
-      <text>
-       <xsl:apply-templates/>
-      </text>
-    </article>
+    <xsl:apply-templates/>
   </xsl:template>
 
-  <xsl:template match="h1">
-    <sect level="1"><title><xsl:value-of select="."/></title></sect>
-  </xsl:template>
-
-  <xsl:template match="h2">
-    <sect level="2"><title><xsl:value-of select="."/></title></sect>
-  </xsl:template>
-
-  <xsl:template match="h3">
-    <sect level="3"><title><xsl:value-of select="."/></title></sect>
-  </xsl:template>
-
-  <xsl:template match="h4">
-    <sect level="4"><title><xsl:value-of select="."/></title></sect>
-  </xsl:template>
-
-  <xsl:template match="h5">
-    <sect level="5"><title><xsl:value-of select="."/></title></sect>
-  </xsl:template>
-
-  <xsl:template match="h6">
-    <sect level="6"><title><xsl:value-of select="."/></title></sect>
-  </xsl:template>
-
-  <xsl:template match="p[@class='caption']">
-  </xsl:template>
-
-  <xsl:template match="p[count(text())=0 and count(code)=1]">
-    <source><xsl:apply-templates select="code"/></source>
-  </xsl:template>
-
-  <xsl:template match="p[count(text())=1 and count(img)=1]">
-    <xsl:apply-templates select="img"/>
-  </xsl:template>
-
-  <xsl:template match="img">
-    <figure url="{@src}">
-      <xsl:if test="@title">
-        <title><xsl:value-of select="@title"/></title>
-      </xsl:if>
-    </figure>
-  </xsl:template>
-
-  <xsl:template match="p">
-    <p><xsl:apply-templates/></p>
-  </xsl:template>
-
-  <xsl:template match="ul">
-    <list><xsl:apply-templates/></list>
-  </xsl:template>
-
-  <xsl:template match="ol">
-    <enum><xsl:apply-templates/></enum>
-  </xsl:template>
-
-  <xsl:template match="li">
-    <item><xsl:apply-templates/></item>
+  <xsl:template match="@*|node()">
+    <xsl:copy>
+      <xsl:apply-templates select="@*|node()"/>
+    </xsl:copy>
   </xsl:template>
 
   <xsl:template match="table">
-    <table><xsl:apply-templates/></table>
-  </xsl:template>
-
-  <xsl:template match="tr[count(th)=0]">
-    <li><xsl:apply-templates/></li>
-  </xsl:template>
-
-  <xsl:template match="tr[count(th) &gt; 0]">
-    <th><xsl:apply-templates/></th>
-  </xsl:template>
-
-  <xsl:template match="th">
-    <co><xsl:apply-templates/></co>
-  </xsl:template>
-
-  <xsl:template match="td">
-    <co><xsl:apply-templates/></co>
+    <table border='1' cellpadding='5'>
+      <xsl:apply-templates/>
+	</table>
+	<p></p>
   </xsl:template>
 
   <xsl:template match="pre">
-    <source><xsl:apply-templates/></source>
-  </xsl:template>
-
-  <xsl:template match="em">
-    <term><xsl:apply-templates/></term>
-  </xsl:template>
-
-  <xsl:template match="strong">
-    <imp><xsl:apply-templates/></imp>
-  </xsl:template>
-
-  <xsl:template match="a">
-    <link url="{@href}"><xsl:apply-templates/></link>
+    <table width='100%' border='0' cellpadding='10'>
+	  <tr>
+	    <td bgcolor='#F0F0F0'>
+		  <pre>
+		    <xsl:apply-templates/>
+		  </pre>
+		</td>
+	  </tr>
+	</table>
+	<p></p>
   </xsl:template>
 
 </xsl:stylesheet>`
-	XHTML_HEADER = "<xhtml>\n"
-	XHTML_FOOTER = "\n</xhtml>"
+	XHTML_HEADER = "<xhtml>\n<body>\n"
+	XHTML_FOOTER = "</body>\n</xhtml>"
 )
 
-func processXsl(xmlFile string, data map[string]string) []byte {
-	xslFile, err := ioutil.TempFile("/tmp", "md2xsl-")
+func processXsl(tmpFile string, data map[string]string) {
+	xslFile, err := ioutil.TempFile("/tmp", "md2pdf-")
 	if err != nil {
 		panic(err)
 	}
@@ -173,14 +89,17 @@ func processXsl(xmlFile string, data map[string]string) []byte {
 		params = append(params, value)
 	}
 	params = append(params, xslFile.Name())
-	params = append(params, xmlFile)
+	params = append(params, tmpFile)
 	command := exec.Command("xsltproc", params...)
 	result, err := command.CombinedOutput()
 	if err != nil {
 		println(result)
 		panic(err)
 	}
-	return result
+	err = ioutil.WriteFile(tmpFile, result, 0644)
+	if err != nil {
+		panic(err)
+	}
 }
 
 func markdown2xhtml(markdown string) []byte {
@@ -255,7 +174,7 @@ func generatePdf(xhtmlFile, outFile string) {
 	if err != nil {
 		println(string(result))
 		panic(err)
-	}	
+	}
 }
 
 func processFile(filename string, printXhtml bool, imgDir, outFile string) {
@@ -263,25 +182,24 @@ func processFile(filename string, printXhtml bool, imgDir, outFile string) {
 	if err != nil {
 		panic(err)
 	}
-	_, markdown := markdownData(string(source))
+	data, markdown := markdownData(string(source))
 	markdown = imageDir(markdown, imgDir)
 	xhtml := markdown2xhtml(markdown)
 	if printXhtml {
 		fmt.Println(string(xhtml))
 		return
 	}
-	xmlFile, err := ioutil.TempFile("/tmp", "md2xml-")
+	tmpFile, err := ioutil.TempFile("/tmp", "md2pdf-")
 	if err != nil {
 		panic(err)
 	}
-	defer os.Remove(xmlFile.Name())
-	ioutil.WriteFile(xmlFile.Name(), xhtml, 0644)
-	// TODO transform XHTML file for better PDF rendering
-	//result := processXsl(xmlFile.Name(), data, article)
+	defer os.Remove(tmpFile.Name())
+	ioutil.WriteFile(tmpFile.Name(), xhtml, 0644)
+	processXsl(tmpFile.Name(), data)
 	if len(outFile) == 0 {
-		outFile = filename[0:len(filename)-len(filepath.Ext(filename))]+".pdf"
+		outFile = filename[0:len(filename)-len(filepath.Ext(filename))] + ".pdf"
 	}
-	generatePdf(xmlFile.Name(), outFile)
+	generatePdf(tmpFile.Name(), outFile)
 }
 
 func main() {
