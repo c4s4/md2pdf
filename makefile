@@ -23,6 +23,10 @@ test: bin
 	xmllint --noout $(BUILD_DIR)/example.xml
 	$(BUILD_DIR)/md2pdf -o $(BUILD_DIR)/example.pdf -i $(TEST_DIR) $(TEST_DIR)/example.md
 
+install: bin
+	@echo "$(YELLOW)Installing binaries$(CLEAR)"
+	sudo cp $(BUILD_DIR)/md2xml $(BUILD_DIR)/md2pdf /opt/bin/
+
 clean:
 	@echo "$(YELLOW)Cleaning generated files$(CLEAR)"
 	rm -rf $(BUILD_DIR)
