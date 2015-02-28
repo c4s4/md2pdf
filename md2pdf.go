@@ -17,7 +17,6 @@ Transform a given Markdown file into PDF.
 -x        Print intermediate XHTML output.
 -s        Print stylesheet used for transformation.
 -t        Print html output.
--a        Output article (instead of blog entry).
 -i dir    To indicate image directory.
 -o file   The name of the file to output.
 file.md   The markdown file to convert.
@@ -29,30 +28,43 @@ This program calls pandoc, xsltproc and htmldoc that must have been installed.`
                 version="1.0">
 
   <xsl:output method="xml" encoding="ISO-8859-1"/>
-  <xsl:param name="id">ID</xsl:param>
-  <xsl:param name="date">DATE</xsl:param>
-  <xsl:param name="title">TITLE</xsl:param>
-  <xsl:param name="author">AUTHOR</xsl:param>
-  <xsl:param name="email">EMAIL</xsl:param>
-  <xsl:param name="lang">fr</xsl:param>
-  <xsl:param name="toc">yes</xsl:param>
+  <xsl:param name="id"/>
+  <xsl:param name="date"/>
+  <xsl:param name="title"/>
+  <xsl:param name="author"/>
+  <xsl:param name="email"/>
+  <xsl:param name="lang"/>
+  <xsl:param name="toc"/>
 
   <!-- catch the root element -->
-  <xsl:template match="/xhtml">
+  <xsl:template match="/xhtml/body">
+    <head>
+	  <meta http-equiv='Content-Type' content='text/xhtml; charset=ISO-8859-1'/>
+	  <xsl:if test="$title">
+	    <title><xsl:value-of select="$title"/></title>
+	  </xsl:if>
+	</head>
+	<body>
     <xsl:if test="$title">
 	  <center>
 	    <h1><xsl:value-of select="$title"/></h1>
 	  </center>
+	  <p align="center"><i>
+	    <font size="-1">
+        <xsl:if test="$author">
+	      <xsl:value-of select="$author"/><br/>
+        </xsl:if>
+	    <xsl:if test="$email">
+		  <a href="mailto:{$email}">
+		    <xsl:value-of select="$email"/>
+		  </a>
+	    </xsl:if>
+		</font>
+	  </i></p>
+	  <br/>
 	</xsl:if>
-	<p align="center"><i>
-      <xsl:if test="$author">
-	    <xsl:value-of select="$author"/><br/>
-      </xsl:if>
-	  <xsl:if test="$email">
-		<xsl:value-of select="$email"/>
-	  </xsl:if>
-	</i></p>
     <xsl:apply-templates/>
+	</body>
   </xsl:template>
 
   <xsl:template match="@*|node()">
@@ -165,10 +177,6 @@ func imageDir(text, imgDir string) string {
 }
 
 func generatePdf(xhtmlFile, outFile string, data map[string]string) {
-	toc := "--no-toc"
-	if data["toc"] == "yes" || data["toc"] == "true" || data["toc"] == "1" {
-		toc = "--no-toc"
-	}
 	params := []string{
 		"--outfile", outFile,
 		"--size", "A4",
@@ -187,7 +195,7 @@ func generatePdf(xhtmlFile, outFile string, data map[string]string) {
 		"--permissions", "no-modify",
 		"--charset", "iso-8859-1",
 		"--no-title",
-		toc,
+		"--no-toc",
 		"--compression=9",
 		"--embedfonts",
 		"--webpage",
