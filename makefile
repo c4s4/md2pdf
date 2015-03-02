@@ -1,4 +1,4 @@
-NAME=md2xml
+NAME=mdtools
 BUILD_DIR=build
 TEST_DIR=test
 

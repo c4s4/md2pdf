@@ -1,7 +1,7 @@
-MD2XML
-======
+MDTOOLS
+=======
 
-To transform Markdown document to XML one with Sweetohm DTD.
+Markdown tools to transform markdown to XML and PDF.
 
 Usage
 -----
