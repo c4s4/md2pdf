@@ -16,6 +16,7 @@ Transform a given Markdown file into XML.
 -x        Print intermediate XHTML output.
 -s        Print stylesheet used for transformation.
 -a        Output article (instead of blog entry).
+-p        Add link to PDF version.
 -i dir    To indicate image directory.
 -o file   The name of the file to output.
 file.md   The markdown file to convert.
@@ -33,6 +34,7 @@ Note: this program calls pandoc and xsltproc that must have been installed.`
   <xsl:param name="email">EMAIL</xsl:param>
   <xsl:param name="lang">fr</xsl:param>
   <xsl:param name="toc">yes</xsl:param>
+  <xsl:param name="pdf">no</xsl:param>
 
   <!-- catch the root element -->
   <xsl:template match="/xhtml">
@@ -47,9 +49,10 @@ Note: this program calls pandoc and xsltproc that must have been installed.`
       <xsl:attribute name="email"><xsl:value-of select="$email"/></xsl:attribute>
       <xsl:attribute name="lang"><xsl:value-of select="$lang"/></xsl:attribute>
       <xsl:attribute name="toc"><xsl:value-of select="$toc"/></xsl:attribute>
+      <xsl:attribute name="pdf"><xsl:value-of select="$pdf"/></xsl:attribute>
       <title><xsl:value-of select="$title"/></title>
       <text>
-       <xsl:apply-templates/>
+        <xsl:apply-templates/>
       </text>
     </article>
   </xsl:template>
@@ -274,7 +277,7 @@ Note: this program calls pandoc and xsltproc that must have been installed.`
 	XHTML_FOOTER = "\n</xhtml>"
 )
 
-func processXsl(xmlFile string, data map[string]string, article bool) []byte {
+func processXsl(xmlFile string, data map[string]string, article, pdf bool) []byte {
 	xslFile, err := ioutil.TempFile("/tmp", "md2xsl-")
 	if err != nil {
 		panic(err)
@@ -293,6 +296,11 @@ func processXsl(xmlFile string, data map[string]string, article bool) []byte {
 		params = append(params, "--stringparam")
 		params = append(params, name)
 		params = append(params, value)
+	}
+	if pdf {
+		params = append(params, "--stringparam")
+		params = append(params, "pdf")
+		params = append(params, "yes")
 	}
 	params = append(params, xslFile.Name())
 	params = append(params, xmlFile)
@@ -347,7 +355,7 @@ func imageDir(text, imgDir string) string {
 	}
 }
 
-func processFile(filename string, printXhtml bool, article bool, imgDir, outFile string) {
+func processFile(filename string, printXhtml, article, pdf bool, imgDir, outFile string) {
 	source, err := ioutil.ReadFile(filename)
 	if err != nil {
 		panic(err)
@@ -364,7 +372,7 @@ func processFile(filename string, printXhtml bool, article bool, imgDir, outFile
 	}
 	defer os.Remove(xmlFile.Name())
 	ioutil.WriteFile(xmlFile.Name(), xhtml, 0644)
-	result := processXsl(xmlFile.Name(), data, article)
+	result := processXsl(xmlFile.Name(), data, article, pdf)
 	if len(outFile) > 0 {
 		ioutil.WriteFile(outFile, result, 0644)
 	} else {
@@ -375,6 +383,7 @@ func processFile(filename string, printXhtml bool, article bool, imgDir, outFile
 func main() {
 	xhtml := false
 	article := false
+	pdf := false
 	imgDir := ""
 	outFile := ""
 	file := ""
@@ -396,6 +405,8 @@ func main() {
 			xhtml = true
 		} else if arg == "-a" || arg == "--article" {
 			article = true
+		} else if arg == "-p" || arg == "--link-pdf" {
+			pdf = true
 		} else if arg == "-s" || arg == "--stylesheet" {
 			if article {
 				fmt.Println(STYLESHEET_ARTICLE)
@@ -412,5 +423,5 @@ func main() {
 			file = arg
 		}
 	}
-	processFile(file, xhtml, article, imgDir, outFile)
+	processFile(file, xhtml, article, pdf, imgDir, outFile)
 }
