@@ -74,9 +74,11 @@ This program calls pandoc, xsltproc and htmldoc that must have been installed.`
   </xsl:template>
 
   <xsl:template match="table">
-    <table border='1' cellpadding='5'>
-      <xsl:apply-templates/>
-	</table>
+	<center>
+      <table border='1' cellpadding='5'>
+        <xsl:apply-templates/>
+	  </table>
+	</center>
 	<p></p>
   </xsl:template>
 
@@ -94,8 +96,8 @@ This program calls pandoc, xsltproc and htmldoc that must have been installed.`
   </xsl:template>
 
   <xsl:template match="div[@class='figure']">
-    <p align="center">
-	  <xsl:apply-templates />
+    <p align="center" width="80%">
+      <xsl:apply-templates />
     </p>
   </xsl:template>
 
