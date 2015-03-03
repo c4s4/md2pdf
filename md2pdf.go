@@ -94,9 +94,16 @@ This program calls pandoc, xsltproc and htmldoc that must have been installed.`
   </xsl:template>
 
   <xsl:template match="div[@class='figure']">
-    <center>
+    <p align="center">
 	  <xsl:apply-templates />
-	</center>
+    </p>
+  </xsl:template>
+
+  <xsl:template match="img">
+    <img src="{@src}"><br/><i><xsl:value-of select="@alt"/></i></img>
+  </xsl:template>
+
+  <xsl:template match="p[@class='caption']">
   </xsl:template>
 
 </xsl:stylesheet>`
@@ -168,12 +175,12 @@ func markdownData(text string) (map[string]string, string) {
 }
 
 func imageDir(text, imgDir string) string {
-	r := regexp.MustCompile(`!\[(.*?)\]\((.*?/)*(.*?)\)`)
-	if len(imgDir) > 0 {
-		return r.ReplaceAllString(text, "![$1]("+imgDir+"/$3)")
-	} else {
-		return r.ReplaceAllString(text, "![$1]($3)")
+	absDir, err := filepath.Abs(imgDir)
+	if err != nil {
+		panic(err)
 	}
+	r := regexp.MustCompile(`!\[(.*?)\]\((.*?/)*(.*?)\)`)
+	return r.ReplaceAllString(text, "![$1]("+absDir+"/$3)")
 }
 
 func generatePdf(xhtmlFile, outFile string, data map[string]string) {

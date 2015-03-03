@@ -15,7 +15,7 @@ Text with *italic*, **bold**, `constant width`. Other _italic_, __bold__ with un
 
 A [Link](http://example.com).
 
-![Image alternative](casa.png "Image title")
+![Image title](casa.png)
 
 Unordered list:
 
