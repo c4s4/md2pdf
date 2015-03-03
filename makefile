@@ -1,9 +1,10 @@
 NAME=mdtools
+VERSION=1.0.0
 BUILD_DIR=build
 TEST_DIR=test
 
-YELLOW=\033[93m
-RED=\033[91m
+YELLOW=\033[1m\033[93m
+RED=\033[1m\033[91m
 CLEAR=\033[0m
 
 
@@ -26,6 +27,16 @@ test: bin
 install: bin
 	@echo "$(YELLOW)Installing binaries$(CLEAR)"
 	sudo cp $(BUILD_DIR)/md2xml $(BUILD_DIR)/md2pdf /opt/bin/
+
+release: clean test bin
+	@echo "$(YELLOW)Making a release$(CLEAR)"
+	git diff --quiet --exit-code HEAD || (echo "$(RED)There are uncommitted changes$(CLEAR)"; exit 1)
+	@if [ `git rev-parse --abbrev-ref HEAD` != "master" ]; then \
+		echo "$(RED)You must release on branch master$(CLEAR)"; \
+		exit 1; \
+	fi
+	git tag "RELEASE-$(VERSION)"
+	git push --tag
 
 clean:
 	@echo "$(YELLOW)Cleaning generated files$(CLEAR)"
