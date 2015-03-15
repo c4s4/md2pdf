@@ -37,8 +37,9 @@ Some special XML characters: < & > " '.
 
 Now, a table:
 
-header 1  header 2
---------  --------
-Element   Element 
+header 1 | header 2 | left         | right        | center
+-------- | -------- | :----------- | -----------: | :----------:
+Element  | Element  | left         | right        | center
+2nd line | Other    | long element | long element | long element
 
 Encoding test: éèàç!
