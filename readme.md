@@ -103,6 +103,8 @@ the markdown files, such as :
     % title:    Document title
     % author:   Michel Casabianca
     % email:    michel.casabianca@gmail.com
+	% lang:     en
+	% toc:      true
     % keywords: markdown test
 
 These headers are used by tools:
@@ -113,6 +115,10 @@ These headers are used by tools:
 - **title**: this is the title of the document.
 - **auhtor**: this is the author of the document.
 - **email**: this is the email of the author of the document.
+- **lang**: this is the language of the document, in ISO format (defaults to
+  *en*).
+- **toc**: tells if we want a table of content in resulting document (defaults
+  to *false*).
 - **keywords**: this is for the internal usage of the site generator.
 
 Bugs
