@@ -3,6 +3,8 @@
 % title:    Document title
 % author:   Michel Casabianca
 % email:    michel.casabianca@gmail.com
+% lang:     en
+% toc:      false
 % keywords: markdown test
 
 Title first level

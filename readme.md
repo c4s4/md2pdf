@@ -121,6 +121,9 @@ These headers are used by tools:
   to *false*).
 - **keywords**: this is for the internal usage of the site generator.
 
+Note that these headers are not mandatory and will have default values if not
+set.
+
 Bugs
 ----
 
