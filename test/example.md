@@ -11,7 +11,8 @@ Title first level
 Title second level
 ------------------
 
-Text with *italic*, **bold**, `constant width`. Other _italic_, __bold__ with underscores.
+Text with *italic*, **bold**, `constant width`. Other _italic_, __bold__ with
+underscores.
 
 A [Link](http://example.com).
 
