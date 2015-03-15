@@ -42,8 +42,9 @@ resulting PDF calling *xsltproc*.
 The option `-i dir` tells in which directory are located images (relative to
 current directory).
 
-This will print resulting PDF document on the console. To put result into a
-given file, use the `-o` option.
+This will print resulting PDF document in a file with the same path than the
+origin markdown document with the *.pdf* extension. To write PDF in another file
+use the `-o file` option.
 
 ### Note
 
