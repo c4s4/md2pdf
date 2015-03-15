@@ -39,6 +39,9 @@ is the file printed with the `-x` option. This file is transformed, calling
 decorated XHTML file printed with the `-t` option. This file is transformed into
 resulting PDF calling *xsltproc*.
 
+The option `-i dir` tells in which directory are located images (relative to
+current directory).
+
 This will print resulting PDF document on the console. To put result into a
 given file, use the `-o` option.
 
@@ -73,6 +76,11 @@ is the file printed with the `-x` option. This file is transformed, calling
 *xsltproc* and the stylesheet printed with the ̀`-s` option, into the resulting
 XML file. The `-a` option prints an article instead of an blog entry (using a
 different stylesheet).
+
+The option `-i dir` tells in which directory are located images (relative to
+current directory).
+
+The `-p` option asks for a link to the PDF file into resulting HTML file.
 
 This will print resulting XML document on the console. To put result into a
 given file, use the `-o` option.
