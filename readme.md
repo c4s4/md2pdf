@@ -86,6 +86,26 @@ plus images with following syntax:
 
     ![Image Title](image_file.jpg)
 
+Furthermore, these tools parse special information headers at the beginning of
+the markdown files, such as :
+
+    % id:       1
+    % date:     2014-06-09
+    % title:    Document title
+    % author:   Michel Casabianca
+    % email:    michel.casabianca@gmail.com
+    % keywords: markdown test
+
+These headers are used by tools:
+
+- **id**: this is the unique ID of the document. This is for my site processor
+  internal usage.
+- **date**: this ISO formatted date is print in documents as production date.
+- **title**: this is the title of the document.
+- **auhtor**: this is the author of the document.
+- **email**: this is the email of the author of the document.
+- **keywords**: this is for the internal usage of the site generator.
+
 Bugs
 ----
 
