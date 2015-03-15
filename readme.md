@@ -1,7 +1,7 @@
 MDTOOLS
 =======
 
-MdTools is a collection of personnal Markdown tools :
+MdTools is a collection of personal Markdown tools :
 
 - md2pdf : transforms a markdown file into PDF.
 - md2xml : transforms a markdown file into XML for my site DTD.
