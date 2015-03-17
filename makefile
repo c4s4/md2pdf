@@ -35,7 +35,7 @@ release: clean test bin
 		echo "$(RED)You must release on branch master$(CLEAR)"; \
 		exit 1; \
 	fi
-	git tag "RELEASE-$(VERSION)"
+	git tag "$(VERSION)"
 	git push --tag
 
 clean:
