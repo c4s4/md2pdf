@@ -22,7 +22,8 @@ Transform a given Markdown file into PDF.
 -o file   The name of the file to output.
 file.md   The markdown file to convert.
 Note:
-This program calls pandoc, xsltproc and htmldoc that must have been installed.`
+This program calls pandoc, xsltproc, htmldoc and faketime that must have been
+installed.`
 	STYLESHEET = `<?xml version="1.0" encoding="utf-8"?>
 
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"

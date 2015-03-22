@@ -7,13 +7,14 @@ MdTools is a collection of personal Markdown tools :
 - md2xml : transforms a markdown file into XML for my site DTD.
 
 They both call *pandoc* and *xsltproc* that must have been installed. *md2pdf*
-also calls *htmldoc* which is a tool to transforms HTML files to PDF. To install
-these dependencies on a Debian like Linux distribution, you could type following
-commands :
+also calls *htmldoc* which is a tool to transforms HTML files to PDF and 
+*faketime* to fake date while generating PDF. To install these dependencies on
+a Debian like Linux distribution, you could type following commands :
 
     sudo apt-get install pandoc
 	sudo apt-get install xsltproc
 	sudo apt-get install htmldoc
+    sudo apt-get install faketime
 
 md2pdf
 ------
@@ -160,5 +161,6 @@ Todo
 Releases
 --------
 
+- **1.1.1** (2015-03-22): Added faketime dependency in documentation.
 - **1.1.0** (2015-03-22): Fixed date in PDF document footer.
 - **1.0.0** (2015-03-17): First release.
