@@ -160,4 +160,5 @@ Todo
 Releases
 --------
 
+- **1.1.0** (2015-03-22): Fixed date in PDF document footer.
 - **1.0.0** (2015-03-17): First release.

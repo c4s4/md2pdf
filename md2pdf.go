@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+	"time"
 )
 
 const (
@@ -186,7 +187,12 @@ func imageDir(text, imgDir string) string {
 }
 
 func generatePdf(xhtmlFile, outFile string, data map[string]string) {
+	if data["date"] == "" {
+		data["date"] = time.Now().Local().Format("20060102")
+	}
 	params := []string{
+		data["date"],
+		"htmldoc",
 		"--outfile", outFile,
 		"--size", "A4",
 		"--top", "2cm",
@@ -210,7 +216,7 @@ func generatePdf(xhtmlFile, outFile string, data map[string]string) {
 		"--webpage",
 		xhtmlFile,
 	}
-	command := exec.Command("htmldoc", params...)
+	command := exec.Command("faketime", params...)
 	result, err := command.CombinedOutput()
 	if err != nil {
 		println(string(result))

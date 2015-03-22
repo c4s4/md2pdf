@@ -1,5 +1,5 @@
 NAME=mdtools
-VERSION=1.0.0
+VERSION=1.1.0
 BUILD_DIR=build
 TEST_DIR=test
 
