@@ -115,6 +115,11 @@ installed.`
 	XHTML_FOOTER = "</body>\n</xhtml>"
 )
 
+var LOCALE = map[string]string{
+	"fr": "fr_FR.UTF-8",
+	"en": "en_US.UTF-8",
+}
+
 func processXsl(tmpFile string, data map[string]string) {
 	xslFile, err := ioutil.TempFile("/tmp", "md2pdf-")
 	if err != nil {
@@ -191,6 +196,9 @@ func generatePdf(xhtmlFile, outFile string, data map[string]string) {
 	if data["date"] == "" {
 		data["date"] = time.Now().Local().Format("20060102")
 	}
+	if data["lang"] == "" {
+		data["lang"] = "fr"
+	}
 	params := []string{
 		data["date"],
 		"htmldoc",
@@ -218,6 +226,16 @@ func generatePdf(xhtmlFile, outFile string, data map[string]string) {
 		xhtmlFile,
 	}
 	command := exec.Command("faketime", params...)
+	env := os.Environ()
+	for i, e := range env {
+		if strings.HasPrefix(e, "LANG") {
+			env[i] = "LANG=" + LOCALE[data["lang"]]
+		}
+		if strings.HasPrefix(e, "LC_ALL") {
+			env[i] = "LC_ALL=" + LOCALE[data["lang"]]
+		}
+	}
+	command.Env = env
 	result, err := command.CombinedOutput()
 	if err != nil {
 		println(string(result))
