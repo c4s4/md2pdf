@@ -1,6 +1,11 @@
 Change Log
 ==========
 
+Unreleased
+----------
+
+- Renamed files to meet standard project specification.
+
 1.1.2: 2015-03-22
 -----------------
 
