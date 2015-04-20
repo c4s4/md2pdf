@@ -27,11 +27,12 @@ Note: this program calls pandoc and xsltproc that must have been installed.`
                 version="1.0">
 
   <xsl:output method="xml" encoding="UTF-8"/>
-  <xsl:param name="id">ID</xsl:param>
-  <xsl:param name="date">DATE</xsl:param>
-  <xsl:param name="title">TITLE</xsl:param>
-  <xsl:param name="author">AUTHOR</xsl:param>
-  <xsl:param name="email">EMAIL</xsl:param>
+  <xsl:param name="id"/>
+  <xsl:param name="date"/>
+  <xsl:param name="title"/>
+  <xsl:param name="author"/>
+  <xsl:param name="email"/>
+  <xsl:param name="keywords"/>
   <xsl:param name="lang">fr</xsl:param>
   <xsl:param name="toc">yes</xsl:param>
   <xsl:param name="pdf">no</xsl:param>
@@ -47,6 +48,7 @@ Note: this program calls pandoc and xsltproc that must have been installed.`
       <xsl:attribute name="date"><xsl:value-of select="$date"/></xsl:attribute>
       <xsl:attribute name="author"><xsl:value-of select="$author"/></xsl:attribute>
       <xsl:attribute name="email"><xsl:value-of select="$email"/></xsl:attribute>
+      <xsl:attribute name="keywords"><xsl:value-of select="$keywords"/></xsl:attribute>
       <xsl:attribute name="lang"><xsl:value-of select="$lang"/></xsl:attribute>
       <xsl:attribute name="toc"><xsl:value-of select="$toc"/></xsl:attribute>
       <xsl:attribute name="pdf"><xsl:value-of select="$pdf"/></xsl:attribute>
@@ -159,9 +161,15 @@ Note: this program calls pandoc and xsltproc that must have been installed.`
                 version="1.0">
 
   <xsl:output method="xml" encoding="UTF-8"/>
-  <xsl:param name="id">ID</xsl:param>
-  <xsl:param name="date">DATE</xsl:param>
-  <xsl:param name="title">TITLE</xsl:param>
+  <xsl:param name="id"/>
+  <xsl:param name="date"/>
+  <xsl:param name="title"/>
+  <xsl:param name="author"/>
+  <xsl:param name="email"/>
+  <xsl:param name="keywords"/>
+  <xsl:param name="lang">fr</xsl:param>
+  <xsl:param name="toc">yes</xsl:param>
+  <xsl:param name="pdf">no</xsl:param>
 
   <!-- catch the root element -->
   <xsl:template match="/xhtml">
@@ -172,6 +180,10 @@ Note: this program calls pandoc and xsltproc that must have been installed.`
     <blog>
       <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
       <xsl:attribute name="date"><xsl:value-of select="$date"/></xsl:attribute>
+      <xsl:attribute name="author"><xsl:value-of select="$author"/></xsl:attribute>
+      <xsl:attribute name="email"><xsl:value-of select="$email"/></xsl:attribute>
+      <xsl:attribute name="keywords"><xsl:value-of select="$keywords"/></xsl:attribute>
+      <xsl:attribute name="lang"><xsl:value-of select="$lang"/></xsl:attribute>
       <title><xsl:value-of select="$title"/></title>
       <xsl:apply-templates/>
     </blog>
