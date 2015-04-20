@@ -1,0 +1,31 @@
+# Semantic Change Log
+
+- version: 1.2.0
+  date:    2015-04-21
+  summary: Added keywords management
+  added:
+  - "Added keywords attribute in article and blog element."
+  fixed:
+  - "Renamed files to meet standard project specification."
+
+- version: 1.1.2
+  date:    2015-03-22
+  summary: Bug fix release
+  fixed:
+  - "Fixed date format in PDF document."
+
+- version: 1.1.1
+  date:    2015-03-22
+  summary: Bug fix release
+  fixed:
+  - "Added faketime dependency in documentation."
+
+- version: 1.1.0
+  date:    2015-03-22
+  summary: Bug fix release
+  fixed:
+  - "Fixed date in PDF document footer."
+
+- version: 1.0.0
+  date:    2015-03-17
+  summary: First release

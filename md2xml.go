@@ -184,6 +184,8 @@ Note: this program calls pandoc and xsltproc that must have been installed.`
       <xsl:attribute name="email"><xsl:value-of select="$email"/></xsl:attribute>
       <xsl:attribute name="keywords"><xsl:value-of select="$keywords"/></xsl:attribute>
       <xsl:attribute name="lang"><xsl:value-of select="$lang"/></xsl:attribute>
+      <xsl:attribute name="toc"><xsl:value-of select="$toc"/></xsl:attribute>
+      <xsl:attribute name="pdf"><xsl:value-of select="$pdf"/></xsl:attribute>
       <title><xsl:value-of select="$title"/></title>
       <xsl:apply-templates/>
     </blog>
