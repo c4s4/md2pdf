@@ -1,5 +1,3 @@
-NAME=mdtools
-VERSION=1.1.2
 BUILD_DIR=build
 TEST_DIR=test
 
@@ -30,13 +28,7 @@ install: bin
 
 release: clean test bin
 	@echo "$(YELLOW)Making a release$(CLEAR)"
-	git diff --quiet --exit-code HEAD || (echo "$(RED)There are uncommitted changes$(CLEAR)"; exit 1)
-	@if [ `git rev-parse --abbrev-ref HEAD` != "master" ]; then \
-		echo "$(RED)You must release on branch master$(CLEAR)"; \
-		exit 1; \
-	fi
-	git tag "$(VERSION)"
-	git push --tag
+	release
 
 clean:
 	@echo "$(YELLOW)Cleaning generated files$(CLEAR)"
