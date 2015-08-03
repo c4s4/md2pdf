@@ -19,6 +19,11 @@ file.md   The markdown file to convert.
 Note: this program calls pandoc that must have been installed.`
 )
 
+func printError(message string) {
+	fmt.Println(message)
+	os.Exit(1)
+}
+
 func markdownData(text string) (map[string]string, string) {
 	data := make(map[string]string)
 	lines := strings.Split(text, "\n")
@@ -37,17 +42,17 @@ func markdownData(text string) (map[string]string, string) {
 }
 
 func insertMeta(text string, meta map[string]string) string {
-	header := "---\n"
+	header := ""
 	if title, ok := meta["title"]; ok {
-		header += "title: " + title + "\n"
+		header += title + "\n"
+	} else {
+		printError("Missing title in metadata")
 	}
 	if author, ok := meta["author"]; ok {
-		header += "author: " + author + "\n"
+		header += author + "\n"
+	} else {
+		printError("Missing author in metadata")
 	}
-	if lang, ok := meta["lang"]; ok {
-		header += "language: " + lang + "\n"
-	}
-	header += "---\n"
 	return header + text
 }
 
@@ -63,22 +68,26 @@ func imageDir(text, imgDir string) string {
 func markdown2epub(markdown, outFile string) {
 	mdFile, err := ioutil.TempFile("/tmp", "md2epub-")
 	if err != nil {
-		panic(err)
+		printError("Error creating temporary file")
 	}
 	defer os.Remove(mdFile.Name())
-	ioutil.WriteFile(mdFile.Name(), []byte(markdown), 0644)
+	err = ioutil.WriteFile(mdFile.Name(), []byte(markdown), 0644)
+	if err != nil {
+		printError("Error writing temporary file")
+	}
 	command := exec.Command("pandoc", "-f", "markdown", "-t", "epub",
 		"-o", outFile, mdFile.Name())
-	err = command.Run()
+	result, err := command.CombinedOutput()
 	if err != nil {
-		panic(err)
+		output := strings.TrimSpace(string(result))
+		printError(fmt.Sprintf("Error calling pandoc:\n%s", output))
 	}
 }
 
 func processFile(filename, imgDir, outFile string) {
 	source, err := ioutil.ReadFile(filename)
 	if err != nil {
-		panic(fmt.Sprintf("Error reading file %s", filename))
+		printError(fmt.Sprintf("Error reading file %s", filename))
 	}
 	data, markdown := markdownData(string(source))
 	markdown = imageDir(markdown, imgDir)
