@@ -44,12 +44,12 @@ func markdownData(text string) (map[string]string, string) {
 func insertMeta(text string, meta map[string]string) string {
 	header := ""
 	if title, ok := meta["title"]; ok {
-		header += title + "\n"
+		header += "% " + title + "\n"
 	} else {
 		printError("Missing title in metadata")
 	}
 	if author, ok := meta["author"]; ok {
-		header += author + "\n"
+		header += "% " + author + "\n"
 	} else {
 		printError("Missing author in metadata")
 	}
