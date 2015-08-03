@@ -13,10 +13,6 @@ const (
 	HELP = `md2epub [-h] [-i dir] [-o file] file.md
 Transform a given Markdown file into XML.
 -h        To print this help page.
--x        Print intermediate XHTML output.
--s        Print stylesheet used for transformation.
--a        Output article (instead of blog entry).
--p        Add link to PDF version.
 -i dir    To indicate image directory.
 -o file   The name of the file to output.
 file.md   The markdown file to convert.

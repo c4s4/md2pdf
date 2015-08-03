@@ -3,13 +3,15 @@ MDTOOLS
 
 MdTools is a collection of personal Markdown tools :
 
-- md2pdf : transforms a markdown file into PDF.
-- md2xml : transforms a markdown file into XML for my site DTD.
+- md2pdf: transforms a markdown file into PDF.
+- md2epub: transforms a markdown file to ePub.
+- md2xml: transforms a markdown file into XML for my site DTD.
 
-They both call *pandoc* and *xsltproc* that must have been installed. *md2pdf*
-also calls *htmldoc* which is a tool to transforms HTML files to PDF and 
-*faketime* to fake date while generating PDF. To install these dependencies on
-a Debian like Linux distribution, you could type following commands :
+They all call *pandoc* that mus be installed. *md2pdf* and *md2xml* also
+call *xsltproc*, and *md2pdf* calls *htmldoc* which is a tool to transform
+HTML files to PDF and *faketime* to fake date while generating PDF. To 
+install these dependencies on a Debian like Linux distribution, you could
+type following commands :
 
     sudo apt-get install pandoc
 	sudo apt-get install xsltproc
@@ -54,6 +56,27 @@ I known that *pandoc* is supposed to produce PDF output with command such as:
      $ pandoc -f markdown -t latex -o example.pdf example.md
 
 But I am not satisfied with resulting output.
+
+md2epub
+-------
+
+To get help, type:
+
+    $ /md2epub -h
+    md2epub [-h] [-i dir] [-o file] file.md
+    Transform a given Markdown file into XML.
+    -h        To print this help page.
+    -i dir    To indicate image directory.
+    -o file   The name of the file to output.
+    file.md   The markdown file to convert.
+    Note: this program calls pandoc that must have been installed.
+
+The option `-i dir` tells in which directory are located images (relative to
+current directory).
+
+This will print resulting ePub document in a file with the same path than the
+origin markdown document with the *.epub* extension. To write ePub in another
+file use the `-o file` option.
 
 md2xml
 ------
