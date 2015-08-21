@@ -15,8 +15,6 @@ bin:
 	mv md2xml $(BUILD_DIR)
 	go build md2pdf.go
 	mv md2pdf $(BUILD_DIR)
-	go build md2epub.go
-	mv md2epub $(BUILD_DIR)
 
 test: bin
 	@echo "$(YELLOW)Running test$(CLEAR)"

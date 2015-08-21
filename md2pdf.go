@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -30,10 +31,10 @@ installed.`
                 version="1.0">
 
   <xsl:output method="xml" encoding="ISO-8859-1"/>
-  <xsl:param name="id"/>
-  <xsl:param name="date"/>
   <xsl:param name="title"/>
   <xsl:param name="author"/>
+  <xsl:param name="date"/>
+  <xsl:param name="id"/>
   <xsl:param name="email"/>
   <xsl:param name="lang"/>
   <xsl:param name="toc"/>
@@ -115,6 +116,46 @@ installed.`
 	XHTML_FOOTER = "</body>\n</xhtml>"
 )
 
+type MetaData struct {
+	Title  string
+	Author string
+	Date   string
+	Tags   []string
+	Id     string
+	Email  string
+	Lang   string
+	Toc    string
+}
+
+func (d MetaData) ToMap() map[string]string {
+	data := make(map[string]string)
+	if d.Title != "" {
+		data["title"] = d.Title
+	}
+	if d.Author != "" {
+		data["author"] = d.Author
+	}
+	if d.Date != "" {
+		data["date"] = d.Date
+	}
+	if len(d.Tags) != 0 {
+		data["tags"] = strings.Join(d.Tags, ", ")
+	}
+	if d.Id != "" {
+		data["id"] = d.Id
+	}
+	if d.Email != "" {
+		data["email"] = d.Email
+	}
+	if d.Lang != "" {
+		data["lang"] = d.Lang
+	}
+	if d.Toc != "" {
+		data["toc"] = d.Toc
+	}
+	return data
+}
+
 var LOCALE = map[string]string{
 	"fr": "fr_FR.UTF-8",
 	"en": "en_US.UTF-8",
@@ -166,21 +207,18 @@ func markdown2xhtml(markdown string) []byte {
 	return []byte(XHTML_HEADER + string(result) + XHTML_FOOTER)
 }
 
-func markdownData(text string) (map[string]string, string) {
-	data := make(map[string]string)
-	lines := strings.Split(text, "\n")
-	var limit int
-	for index, line := range lines {
-		if strings.HasPrefix(line, "% ") && strings.Index(line, ":") >= 0 {
-			name := strings.TrimSpace(line[2:strings.Index(line, ":")])
-			value := strings.TrimSpace(line[strings.Index(line, ":")+1 : len(line)])
-			data[name] = value
-		} else {
-			limit = index
-			break
-		}
+func markdownData(text string) (MetaData, string) {
+	var data MetaData
+	r := regexp.MustCompile("(?ms)\\A---.*?(---|\\.\\.\\.)")
+	yml := r.FindString(text)
+	if yml == "" {
+		return data, text
 	}
-	return data, strings.Join(lines[limit:len(lines)], "\n")
+	err := yaml.Unmarshal([]byte(yml), &data)
+	if err != nil {
+		panic(err)
+	}
+	return data, text[len(yml):]
 }
 
 func imageDir(text, imgDir string) string {
@@ -261,7 +299,7 @@ func processFile(filename string, printXhtml, printHtml bool, imgDir, outFile st
 	}
 	defer os.Remove(tmpFile.Name())
 	ioutil.WriteFile(tmpFile.Name(), xhtml, 0644)
-	processXsl(tmpFile.Name(), data)
+	processXsl(tmpFile.Name(), data.ToMap())
 	if printHtml {
 		source, err := ioutil.ReadFile(tmpFile.Name())
 		if err != nil {
@@ -273,7 +311,7 @@ func processFile(filename string, printXhtml, printHtml bool, imgDir, outFile st
 	if len(outFile) == 0 {
 		outFile = filename[0:len(filename)-len(filepath.Ext(filename))] + ".pdf"
 	}
-	generatePdf(tmpFile.Name(), outFile, data)
+	generatePdf(tmpFile.Name(), outFile, data.ToMap())
 }
 
 func main() {
