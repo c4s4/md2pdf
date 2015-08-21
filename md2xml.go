@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -27,12 +28,12 @@ Note: this program calls pandoc and xsltproc that must have been installed.`
                 version="1.0">
 
   <xsl:output method="xml" encoding="UTF-8"/>
-  <xsl:param name="id"/>
-  <xsl:param name="date"/>
   <xsl:param name="title"/>
   <xsl:param name="author"/>
+  <xsl:param name="date"/>
+  <xsl:param name="tags"/>
+  <xsl:param name="id"/>
   <xsl:param name="email"/>
-  <xsl:param name="keywords"/>
   <xsl:param name="lang">fr</xsl:param>
   <xsl:param name="toc">yes</xsl:param>
   <xsl:param name="pdf">no</xsl:param>
@@ -48,7 +49,7 @@ Note: this program calls pandoc and xsltproc that must have been installed.`
       <xsl:attribute name="date"><xsl:value-of select="$date"/></xsl:attribute>
       <xsl:attribute name="author"><xsl:value-of select="$author"/></xsl:attribute>
       <xsl:attribute name="email"><xsl:value-of select="$email"/></xsl:attribute>
-      <xsl:attribute name="keywords"><xsl:value-of select="$keywords"/></xsl:attribute>
+      <xsl:attribute name="keywords"><xsl:value-of select="$tags"/></xsl:attribute>
       <xsl:attribute name="lang"><xsl:value-of select="$lang"/></xsl:attribute>
       <xsl:attribute name="toc"><xsl:value-of select="$toc"/></xsl:attribute>
       <xsl:attribute name="pdf"><xsl:value-of select="$pdf"/></xsl:attribute>
@@ -161,12 +162,12 @@ Note: this program calls pandoc and xsltproc that must have been installed.`
                 version="1.0">
 
   <xsl:output method="xml" encoding="UTF-8"/>
-  <xsl:param name="id"/>
-  <xsl:param name="date"/>
   <xsl:param name="title"/>
   <xsl:param name="author"/>
+  <xsl:param name="date"/>
+  <xsl:param name="tags"/>
+  <xsl:param name="id"/>
   <xsl:param name="email"/>
-  <xsl:param name="keywords"/>
   <xsl:param name="lang">fr</xsl:param>
   <xsl:param name="toc">yes</xsl:param>
   <xsl:param name="pdf">no</xsl:param>
@@ -182,7 +183,7 @@ Note: this program calls pandoc and xsltproc that must have been installed.`
       <xsl:attribute name="date"><xsl:value-of select="$date"/></xsl:attribute>
       <xsl:attribute name="author"><xsl:value-of select="$author"/></xsl:attribute>
       <xsl:attribute name="email"><xsl:value-of select="$email"/></xsl:attribute>
-      <xsl:attribute name="keywords"><xsl:value-of select="$keywords"/></xsl:attribute>
+      <xsl:attribute name="keywords"><xsl:value-of select="$tags"/></xsl:attribute>
       <xsl:attribute name="lang"><xsl:value-of select="$lang"/></xsl:attribute>
       <xsl:attribute name="toc"><xsl:value-of select="$toc"/></xsl:attribute>
       <xsl:attribute name="pdf"><xsl:value-of select="$pdf"/></xsl:attribute>
@@ -291,6 +292,50 @@ Note: this program calls pandoc and xsltproc that must have been installed.`
 	XHTML_FOOTER = "\n</xhtml>"
 )
 
+type MetaData struct {
+	Title  string
+	Author string
+	Date   string
+	Tags   []string
+	Id     string
+	Email  string
+	Lang   string
+	Toc    string
+	Pdf    string
+}
+
+func (d MetaData) ToMap() map[string]string {
+	data := make(map[string]string)
+	if d.Title != "" {
+		data["title"] = d.Title
+	}
+	if d.Author != "" {
+		data["author"] = d.Author
+	}
+	if d.Date != "" {
+		data["date"] = d.Date
+	}
+	if len(d.Tags) != 0 {
+		data["tags"] = strings.Join(d.Tags, ", ")
+	}
+	if d.Id != "" {
+		data["id"] = d.Id
+	}
+	if d.Email != "" {
+		data["email"] = d.Email
+	}
+	if d.Lang != "" {
+		data["lang"] = d.Lang
+	}
+	if d.Toc != "" {
+		data["toc"] = d.Toc
+	}
+	if d.Pdf != "" {
+		data["pdf"] = d.Pdf
+	}
+	return data
+}
+
 func processXsl(xmlFile string, data map[string]string, article, pdf bool) []byte {
 	xslFile, err := ioutil.TempFile("/tmp", "md2xsl-")
 	if err != nil {
@@ -343,21 +388,18 @@ func markdown2xhtml(markdown string) []byte {
 	return []byte(XHTML_HEADER + string(result) + XHTML_FOOTER)
 }
 
-func markdownData(text string) (map[string]string, string) {
-	data := make(map[string]string)
-	lines := strings.Split(text, "\n")
-	var limit int
-	for index, line := range lines {
-		if strings.HasPrefix(line, "% ") && strings.Index(line, ":") >= 0 {
-			name := strings.TrimSpace(line[2:strings.Index(line, ":")])
-			value := strings.TrimSpace(line[strings.Index(line, ":")+1 : len(line)])
-			data[name] = value
-		} else {
-			limit = index
-			break
-		}
+func markdownData(text string) (MetaData, string) {
+	var data MetaData
+	r := regexp.MustCompile("(?ms)\\A---.*?(---|\\.\\.\\.)")
+	yml := r.FindString(text)
+	if yml == "" {
+		return data, text
 	}
-	return data, strings.Join(lines[limit:len(lines)], "\n")
+	err := yaml.Unmarshal([]byte(yml), &data)
+	if err != nil {
+		panic(err)
+	}
+	return data, text[len(yml):]
 }
 
 func imageDir(text, imgDir string) string {
@@ -386,7 +428,7 @@ func processFile(filename string, printXhtml, article, pdf bool, imgDir, outFile
 	}
 	defer os.Remove(xmlFile.Name())
 	ioutil.WriteFile(xmlFile.Name(), xhtml, 0644)
-	result := processXsl(xmlFile.Name(), data, article, pdf)
+	result := processXsl(xmlFile.Name(), data.ToMap(), article, pdf)
 	if len(outFile) > 0 {
 		ioutil.WriteFile(outFile, result, 0644)
 	} else {
