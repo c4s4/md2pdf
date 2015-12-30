@@ -127,6 +127,25 @@ type MetaData struct {
 	Toc    string
 }
 
+func printError(err error, message string) {
+	if err != nil {
+		println(message)
+		os.Exit(1)
+	}
+}
+
+func executeCommand(command *exec.Cmd) []byte {
+	result, err := command.CombinedOutput()
+	if err != nil {
+		println(fmt.Sprintf("Error running command \"%s\":", strings.Join(command.Args, " ")))
+		println(string(result))
+		os.Exit(1)
+		return []byte{}
+	} else {
+		return result
+	}
+}
+
 func (d MetaData) ToMap() map[string]string {
 	data := make(map[string]string)
 	if d.Title != "" {
@@ -163,13 +182,9 @@ var LOCALE = map[string]string{
 
 func processXsl(tmpFile string, data map[string]string) {
 	xslFile, err := ioutil.TempFile("/tmp", "md2pdf-")
-	if err != nil {
-		panic(err)
-	}
+	printError(err, "Error creating XSL temporary file")
 	err = ioutil.WriteFile(xslFile.Name(), []byte(STYLESHEET), 0644)
-	if err != nil {
-		panic(err)
-	}
+	printError(err, "Error writing XSL temporary file")
 	defer os.Remove(xslFile.Name())
 	params := make([]string, 0, 2+3*len(data))
 	for name, value := range data {
@@ -180,30 +195,18 @@ func processXsl(tmpFile string, data map[string]string) {
 	params = append(params, xslFile.Name())
 	params = append(params, tmpFile)
 	command := exec.Command("xsltproc", params...)
-	result, err := command.CombinedOutput()
-	if err != nil {
-		println(result)
-		panic(err)
-	}
+	result := executeCommand(command)
 	err = ioutil.WriteFile(tmpFile, result, 0644)
-	if err != nil {
-		panic(err)
-	}
+	printError(err, "Error writing temporary file")
 }
 
 func markdown2xhtml(markdown string) []byte {
 	mdFile, err := ioutil.TempFile("/tmp", "md2xsl-")
-	if err != nil {
-		panic(err)
-	}
+	printError(err, "Error creating temporary markdown file")
 	defer os.Remove(mdFile.Name())
 	ioutil.WriteFile(mdFile.Name(), []byte(markdown), 0644)
 	command := exec.Command("pandoc", mdFile.Name(), "-f", "markdown", "-t", "html")
-	result, err := command.CombinedOutput()
-	if err != nil {
-		println(result)
-		panic(err)
-	}
+	result := executeCommand(command)
 	return []byte(XHTML_HEADER + string(result) + XHTML_FOOTER)
 }
 
@@ -215,17 +218,13 @@ func markdownData(text string) (MetaData, string) {
 		return data, text
 	}
 	err := yaml.Unmarshal([]byte(yml), &data)
-	if err != nil {
-		panic(err)
-	}
+	printError(err, "Error unmarshalling YAML markdown data")
 	return data, text[len(yml):]
 }
 
 func imageDir(text, imgDir string) string {
 	absDir, err := filepath.Abs(imgDir)
-	if err != nil {
-		panic(err)
-	}
+	printError(err, "Error getting absolute file path")
 	r := regexp.MustCompile(`!\[(.*?)\]\((.*?/)*(.*?)\)`)
 	return r.ReplaceAllString(text, "![$1]("+absDir+"/$3)")
 }
@@ -274,18 +273,12 @@ func generatePdf(xhtmlFile, outFile string, data map[string]string) {
 		}
 	}
 	command.Env = env
-	result, err := command.CombinedOutput()
-	if err != nil {
-		println(string(result))
-		panic(err)
-	}
+	executeCommand(command)
 }
 
 func processFile(filename string, printXhtml, printHtml bool, imgDir, outFile string) {
 	source, err := ioutil.ReadFile(filename)
-	if err != nil {
-		panic(err)
-	}
+	printError(err, "Error reading file")
 	data, markdown := markdownData(string(source))
 	markdown = imageDir(markdown, imgDir)
 	xhtml := markdown2xhtml(markdown)
@@ -294,17 +287,13 @@ func processFile(filename string, printXhtml, printHtml bool, imgDir, outFile st
 		return
 	}
 	tmpFile, err := ioutil.TempFile("/tmp", "md2pdf-")
-	if err != nil {
-		panic(err)
-	}
+	printError(err, "Error creating temporary file")
 	defer os.Remove(tmpFile.Name())
 	ioutil.WriteFile(tmpFile.Name(), xhtml, 0644)
 	processXsl(tmpFile.Name(), data.ToMap())
 	if printHtml {
 		source, err := ioutil.ReadFile(tmpFile.Name())
-		if err != nil {
-			panic(err)
-		}
+		printError(err, "Error reading temporary file")
 		fmt.Println(string(source))
 		return
 	}

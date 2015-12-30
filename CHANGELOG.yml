@@ -1,9 +1,10 @@
 # Semantic Change Log
 
 - version: 1.4.1
-  date:    2015-12-??
+  date:    2015-12-30
   fixed:
   - "Fixed documentation removing md2epub paragraph."
+  - "Fixed error handling while running system commands."
 
 - version: 1.4.0
   date:    2015-08-21
