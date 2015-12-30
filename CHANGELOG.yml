@@ -1,5 +1,10 @@
 # Semantic Change Log
 
+- version: 1.4.1
+  date:    2015-12-??
+  fixed:
+  - "Fixed documentation removing md2epub paragraph."
+
 - version: 1.4.0
   date:    2015-08-21
   summary: Parsing standard Pandoc metadata

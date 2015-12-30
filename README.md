@@ -4,7 +4,6 @@ MDTOOLS
 MdTools is a collection of personal Markdown tools :
 
 - md2pdf: transforms a markdown file into PDF.
-- md2epub: transforms a markdown file to ePub.
 - md2xml: transforms a markdown file into XML for my site DTD.
 
 They all call *pandoc* that mus be installed. *md2pdf* and *md2xml* also
@@ -56,27 +55,6 @@ I known that *pandoc* is supposed to produce PDF output with command such as:
      $ pandoc -f markdown -t latex -o example.pdf example.md
 
 But I am not satisfied with resulting output.
-
-md2epub
--------
-
-To get help, type:
-
-    $ /md2epub -h
-    md2epub [-h] [-i dir] [-o file] file.md
-    Transform a given Markdown file into XML.
-    -h        To print this help page.
-    -i dir    To indicate image directory.
-    -o file   The name of the file to output.
-    file.md   The markdown file to convert.
-    Note: this program calls pandoc that must have been installed.
-
-The option `-i dir` tells in which directory are located images (relative to
-current directory).
-
-This will print resulting ePub document in a file with the same path than the
-origin markdown document with the *.epub* extension. To write ePub in another
-file use the `-o file` option.
 
 md2xml
 ------
