@@ -1,5 +1,13 @@
 # Semantic Change Log
 
+- version: 2.0.0
+  date:    2016-03-21
+  summary: Project focus on md2pdf
+  removed:
+  - "Removed tool md2xml and project renamed md2pdf."
+  added:
+  - "Added binary distribution."
+
 - version: 1.4.1
   date:    2015-12-30
   fixed:

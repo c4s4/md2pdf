@@ -1,3 +1,5 @@
+NAME=md2pdf
+VERSION=$(shell changelog release version)
 BUILD_DIR=build
 TEST_DIR=test
 
@@ -5,31 +7,42 @@ YELLOW=\033[93m
 RED=\033[1m\033[91m
 CLEAR=\033[0m
 
+.PHONY: build test
 
-all: clean test
+all: clean test build
 
-bin:
+test:
+	@echo "$(YELLOW)Running test$(CLEAR)"
+	mkdir -p $(BUILD_DIR)
+	go run $(NAME).go -o $(BUILD_DIR)/example.pdf -i $(TEST_DIR) $(TEST_DIR)/example.md
+
+build:
 	@echo "$(YELLOW)Building executable$(CLEAR)"
 	mkdir -p $(BUILD_DIR)
-	go build md2xml.go
-	mv md2xml $(BUILD_DIR)
-	go build md2pdf.go
-	mv md2pdf $(BUILD_DIR)
+	go build -o $(BUILD_DIR)/$(NAME)
 
-test: bin
-	@echo "$(YELLOW)Running test$(CLEAR)"
-	$(BUILD_DIR)/md2xml -o $(BUILD_DIR)/example.xml $(TEST_DIR)/example.md
-	xmllint --noout $(BUILD_DIR)/example.xml
-	$(BUILD_DIR)/md2pdf -o $(BUILD_DIR)/example.pdf -i $(TEST_DIR) $(TEST_DIR)/example.md
+archive: clean
+	@echo "$(YELLOW)Building binary archive$(CLEAR)"
+	mkdir -p $(BUILD_DIR)/$(NAME)-$(VERSION)/
+	gox -output=$(BUILD_DIR)/$(NAME)-$(VERSION)/{{.Dir}}_{{.OS}}_{{.Arch}}
+	cp LICENSE.txt $(BUILD_DIR)/$(NAME)-$(VERSION)/
+	cp README.md $(BUILD_DIR)/ && cd $(BUILD_DIR) && md2pdf README.md && cp README.pdf $(NAME)-$(VERSION)/
+	cd $(BUILD_DIR) && tar cvzf $(NAME)-bin-$(VERSION).tar.gz $(NAME)-$(VERSION)
 
-install: bin
-	@echo "$(YELLOW)Installing binaries$(CLEAR)"
-	sudo cp $(BUILD_DIR)/md2xml $(BUILD_DIR)/md2pdf /opt/bin/
-
-release: clean test bin
-	@echo "$(YELLOW)Making a release$(CLEAR)"
+release: clean test archive
+	@echo "$(YELLOW)Making release $(VERSION)$(CLEAR)"
 	release
 
 clean:
 	@echo "$(YELLOW)Cleaning generated files$(CLEAR)"
 	rm -rf $(BUILD_DIR)
+
+help:
+	@echo "$(YELLOW)Print help$(CLEAR)"
+	@echo "$(CYAN)test$(CLEAR)    Run tests"
+	@echo "$(CYAN)build$(CLEAR)   Build executable"
+	@echo "$(CYAN)archive$(CLEAR) Build binary archive"
+	@echo "$(CYAN)release$(CLEAR) Make a release"
+	@echo "$(CYAN)clean$(CLEAR)   Clean generated files"
+	@echo "$(CYAN)help$(CLEAR)    Print this help screen"
+

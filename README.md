@@ -1,24 +1,28 @@
-MDTOOLS
-=======
+MD2PDF
+======
 
-MdTools is a collection of personal Markdown tools :
+md2pdf is a tool to convert [Markdown](https://en.wikipedia.org/wiki/Markdown)
+documents to PDF, without using LaTeX.
 
-- md2pdf: transforms a markdown file into PDF.
-- md2xml: transforms a markdown file into XML for my site DTD.
+Installation
+------------
 
-They all call *pandoc* that mus be installed. *md2pdf* and *md2xml* also
-call *xsltproc*, and *md2pdf* calls *htmldoc* which is a tool to transform
-HTML files to PDF and *faketime* to fake date while generating PDF. To 
-install these dependencies on a Debian like Linux distribution, you could
-type following commands :
+Download the archive on 
+[the releases page](https://github.com/c4s4/md2pdf/releases). Unzip it and
+put the binary for your platform somewhere in your *PATH* (in directory
+*/usr/local/bin* for instance).
+
+As this tool calls *pandoc*, *htmldoc*, *xsltproc* and *faketime*, you must
+install them with *md2pdf*. To install these dependencies on a Debian like
+Linux distribution, you can type following commands :
 
     sudo apt-get install pandoc
 	sudo apt-get install xsltproc
 	sudo apt-get install htmldoc
     sudo apt-get install faketime
 
-md2pdf
-------
+Usage
+-----
 
 To get help about this tool, type :
 
@@ -47,46 +51,6 @@ current directory).
 This will print resulting PDF document in a file with the same path than the
 origin markdown document with the *.pdf* extension. To write PDF in another file
 use the `-o file` option.
-
-### Note
-
-I known that *pandoc* is supposed to produce PDF output with command such as:
-
-     $ pandoc -f markdown -t latex -o example.pdf example.md
-
-But I am not satisfied with resulting output.
-
-md2xml
-------
-
-To get help about this tool, type :
-
-    $ md2xml -h
-	md2xml [-h] [-x] [-s] [-a] [-i dir] [-o file] file.md
-    Transform a given Markdown file into XML.
-    -h        To print this help page.
-    -x        Print intermediate XHTML output.
-    -s        Print stylesheet used for transformation.
-    -a        Output article (instead of blog entry).
-    -p        Add link to PDF version.
-    -i dir    To indicate image directory.
-    -o file   The name of the file to output.
-    file.md   The markdown file to convert.
-    Note: this program calls pandoc and xsltproc that must have been installed.
-
-This tool calls *pandoc* to transform the markdown file into an XHTML one. This
-is the file printed with the `-x` option. This file is transformed, calling 
-*xsltproc* and the stylesheet printed with the ̀`-s` option, into the resulting
-XML file. The `-a` option prints an article instead of an blog entry (using a
-different stylesheet).
-
-The option `-i dir` tells in which directory are located images (relative to
-current directory).
-
-The `-p` option asks for a link to the PDF file into resulting HTML file.
-
-This will print resulting XML document on the console. To put result into a
-given file, use the `-o` option.
 
 Markdown syntax
 ---------------
