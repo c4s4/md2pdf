@@ -61,34 +61,34 @@ plus images with following syntax:
 
     ![Image Title](image_file.jpg)
 
-Furthermore, these tools parse special information headers at the beginning of
-the markdown files, such as :
+Furthermore, this tool parses YAML header at the beginning of the markdown
+document, as used by *pandoc* tool, such as :
 
-    % id:       1
-    % date:     2014-06-09
-    % title:    Document title
-    % author:   Michel Casabianca
-    % email:    michel.casabianca@gmail.com
-	% lang:     en
-	% toc:      true
-    % keywords: markdown test
+    ---
+    title:    Document title
+    author:   Michel Casabianca
+    date:     2014-06-09
+    email:    michel.casabianca@gmail.com
+    id:       1
+	lang:     en
+	toc:      true
+    ---
 
-These headers are used by tools:
+These headers are used by the tools to print information at the beginning of
+the document and in page footer:
 
-- **id**: this is the unique ID of the document. This is for my site processor
-  internal usage.
-- **date**: this ISO formatted date is print in documents as production date.
 - **title**: this is the title of the document.
 - **auhtor**: this is the author of the document.
+- **date**: this ISO formatted date is print in documents as production date.
 - **email**: this is the email of the author of the document.
+- **id**: this is the unique ID of the document. This is for my site processor
+  internal usage.
 - **lang**: this is the language of the document, in ISO format (defaults to
   *en*).
 - **toc**: tells if we want a table of content in resulting document (defaults
   to *false*).
-- **keywords**: this is for the internal usage of the site generator.
 
-Note that these headers are not mandatory and will have default values if not
-set.
+Note that these headers are not mandatory.
 
 Bugs
 ----
@@ -121,5 +121,5 @@ If there is a paragraph between, it works:
 Todo
 ----
 
-- Enable TOC for PDF.
+- Generate TOC in resulting PDF file.
 

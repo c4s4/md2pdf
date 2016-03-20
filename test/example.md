@@ -1,11 +1,12 @@
-% id:       1
-% date:     2014-06-09
-% title:    Document title
-% author:   Michel Casabianca
-% email:    michel.casabianca@gmail.com
-% lang:     en
-% toc:      false
-% keywords: markdown test
+---
+title:    Document title
+author:   Michel Casabianca
+date:     2014-06-09
+id:       1
+email:    michel.casabianca@gmail.com
+lang:     en
+toc:      false
+---
 
 Title first level
 =================

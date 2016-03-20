@@ -7,6 +7,8 @@
   - "Removed tool md2xml and project renamed md2pdf."
   added:
   - "Added binary distribution."
+  fixed:
+  - "Fixed header in test document."
 
 - version: 1.4.1
   date:    2015-12-30
