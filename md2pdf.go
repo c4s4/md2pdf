@@ -225,8 +225,15 @@ func markdownData(text string) (MetaData, string) {
 func imageDir(text, imgDir string) string {
 	absDir, err := filepath.Abs(imgDir)
 	printError(err, "Error getting absolute file path")
-	r := regexp.MustCompile(`!\[(.*?)\]\((.*?/)*(.*?)\)`)
+	r := regexp.MustCompile(`!\[(.*?)\]\(([^/].*?/)*([^/]*?)\)`)
 	return r.ReplaceAllString(text, "![$1]("+absDir+"/$3)")
+}
+
+func absoluteDir(text, filename string) string {
+	absDir, err := filepath.Abs(filepath.Dir(filename))
+	printError(err, "Error getting absolute file path")
+	r := regexp.MustCompile(`!\[(.*?)\]\(([^/].*?)\)`)
+	return r.ReplaceAllString(text, "![$1]("+absDir+"/$2)")
 }
 
 func generatePdf(xhtmlFile, outFile string, data map[string]string) {
@@ -280,7 +287,11 @@ func processFile(filename string, printXhtml, printHtml bool, imgDir, outFile st
 	source, err := ioutil.ReadFile(filename)
 	printError(err, "Error reading file")
 	data, markdown := markdownData(string(source))
-	markdown = imageDir(markdown, imgDir)
+	if imgDir != "" {
+		markdown = imageDir(markdown, imgDir)
+	} else {
+		markdown = absoluteDir(markdown, filename)
+	}
 	xhtml := markdown2xhtml(markdown)
 	if printXhtml {
 		fmt.Println(string(xhtml))
