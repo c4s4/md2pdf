@@ -4,7 +4,7 @@ BUILD_DIR=build
 TEST_DIR=test
 
 YELLOW=\033[93m
-RED=\033[1m\033[91m
+CYAN=\033[1m\033[96m
 CLEAR=\033[0m
 
 .PHONY: build test
