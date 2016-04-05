@@ -12,11 +12,10 @@ Download the archive on
 put the binary for your platform somewhere in your *PATH* (in directory
 */usr/local/bin* for instance).
 
-As this tool calls *pandoc*, *htmldoc*, *xsltproc* and *faketime*, you must
-install them with *md2pdf*. To install these dependencies on a Debian like
-Linux distribution, you can type following commands :
+As this tool calls *htmldoc*, *xsltproc* and *faketime*, you must install them
+with *md2pdf*. To install these dependencies on a Debian like Linux 
+distribution, you can type following commands :
 
-    sudo apt-get install pandoc
 	sudo apt-get install xsltproc
 	sudo apt-get install htmldoc
     sudo apt-get install faketime
@@ -39,7 +38,7 @@ To get help about this tool, type :
     Note:
     This program calls pandoc, xsltproc and htmldoc that must have been installed.
 
-This tool calls *pandoc* to transform the markdown file into an XHTML one. This
+This tool transforms Markdown input to XHTML using blackfriday library. This
 is the file printed with the `-x` option. This file is transformed, calling 
 *xsltproc* and the stylesheet printed with the ̀`-s` option, into an intermediate
 decorated XHTML file printed with the `-t` option. This file is transformed into

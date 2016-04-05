@@ -11,6 +11,11 @@ CLEAR=\033[0m
 
 all: clean test build
 
+deps:
+	@echo "$(YELLOW)Installing Go dependencies$(CLEAR)"
+	go get gopkg.in/yaml.v2
+	go get github.com/russross/blackfriday
+
 test:
 	@echo "$(YELLOW)Running test$(CLEAR)"
 	mkdir -p $(BUILD_DIR)
@@ -39,6 +44,7 @@ clean:
 
 help:
 	@echo "$(YELLOW)Print help$(CLEAR)"
+	@echo "$(CYAN)deps$(CLEAR)    Install Go dependencies"
 	@echo "$(CYAN)test$(CLEAR)    Run tests"
 	@echo "$(CYAN)build$(CLEAR)   Build executable"
 	@echo "$(CYAN)archive$(CLEAR) Build binary archive"
