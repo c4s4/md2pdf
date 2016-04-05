@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/russross/blackfriday"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
@@ -98,7 +99,7 @@ installed.`
 	<p></p>
   </xsl:template>
 
-  <xsl:template match="div[@class='figure']">
+  <xsl:template match="p[img]">
     <p align="center" width="80%">
       <xsl:apply-templates />
     </p>
@@ -106,9 +107,6 @@ installed.`
 
   <xsl:template match="img">
     <img src="{@src}"><br/><i><xsl:value-of select="@alt"/></i></img>
-  </xsl:template>
-
-  <xsl:template match="p[@class='caption']">
   </xsl:template>
 
 </xsl:stylesheet>`
@@ -201,13 +199,21 @@ func processXsl(tmpFile string, data map[string]string) {
 }
 
 func markdown2xhtml(markdown string) []byte {
-	mdFile, err := ioutil.TempFile("/tmp", "md2xsl-")
-	printError(err, "Error creating temporary markdown file")
-	defer os.Remove(mdFile.Name())
-	ioutil.WriteFile(mdFile.Name(), []byte(markdown), 0644)
-	command := exec.Command("pandoc", mdFile.Name(), "-f", "markdown", "-t", "html")
-	result := executeCommand(command)
-	return []byte(XHTML_HEADER + string(result) + XHTML_FOOTER)
+	flags := 0 |
+		blackfriday.HTML_USE_XHTML
+	extensions := 0 |
+		blackfriday.EXTENSION_NO_INTRA_EMPHASIS |
+		blackfriday.EXTENSION_TABLES |
+		blackfriday.EXTENSION_FENCED_CODE |
+		blackfriday.EXTENSION_AUTOLINK |
+		blackfriday.EXTENSION_STRIKETHROUGH |
+		blackfriday.EXTENSION_SPACE_HEADERS |
+		blackfriday.EXTENSION_HEADER_IDS |
+		blackfriday.EXTENSION_BACKSLASH_LINE_BREAK |
+		blackfriday.EXTENSION_DEFINITION_LISTS
+	renderer := blackfriday.HtmlRenderer(flags, "", "")
+	output := blackfriday.Markdown([]byte(markdown), renderer, extensions)
+	return []byte("<xhtml>\n<body>\n\n" + string(output) + "\n</body>\n</xhtml>")
 }
 
 func markdownData(text string) (MetaData, string) {
