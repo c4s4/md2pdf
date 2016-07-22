@@ -9,7 +9,15 @@ CLEAR=\033[0m
 
 .PHONY: build test
 
-all: clean test build
+help:
+	@echo "$(YELLOW)Print help$(CLEAR)"
+	@echo "$(CYAN)deps$(CLEAR)    Install Go dependencies"
+	@echo "$(CYAN)test$(CLEAR)    Run tests"
+	@echo "$(CYAN)build$(CLEAR)   Build executable"
+	@echo "$(CYAN)archive$(CLEAR) Build binary archive"
+	@echo "$(CYAN)release$(CLEAR) Make a release"
+	@echo "$(CYAN)clean$(CLEAR)   Clean generated files"
+	@echo "$(CYAN)help$(CLEAR)    Print this help screen"
 
 deps:
 	@echo "$(YELLOW)Installing Go dependencies$(CLEAR)"
@@ -26,7 +34,7 @@ build:
 	mkdir -p $(BUILD_DIR)
 	go build -o $(BUILD_DIR)/$(NAME)
 
-archive: clean
+archive: clean build
 	@echo "$(YELLOW)Building binary archive$(CLEAR)"
 	mkdir -p $(BUILD_DIR)/$(NAME)-$(VERSION)/
 	gox -output=$(BUILD_DIR)/$(NAME)-$(VERSION)/{{.Dir}}_{{.OS}}_{{.Arch}}
@@ -41,14 +49,4 @@ release: clean test archive
 clean:
 	@echo "$(YELLOW)Cleaning generated files$(CLEAR)"
 	rm -rf $(BUILD_DIR)
-
-help:
-	@echo "$(YELLOW)Print help$(CLEAR)"
-	@echo "$(CYAN)deps$(CLEAR)    Install Go dependencies"
-	@echo "$(CYAN)test$(CLEAR)    Run tests"
-	@echo "$(CYAN)build$(CLEAR)   Build executable"
-	@echo "$(CYAN)archive$(CLEAR) Build binary archive"
-	@echo "$(CYAN)release$(CLEAR) Make a release"
-	@echo "$(CYAN)clean$(CLEAR)   Clean generated files"
-	@echo "$(CYAN)help$(CLEAR)    Print this help screen"
 
