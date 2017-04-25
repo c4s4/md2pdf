@@ -1,0 +1,63 @@
+name:    md2pdf
+doc:     Build md2pdf project
+default: test
+
+properties:
+  NAME:      'md2pdf'
+  VERSION:   '#{run("changelog", "release", "version")}'
+  BUILD_DIR: 'build'
+  TEST_DIR:  'test'
+  ARC_DIR:   '#{BUILD_DIR}/#{NAME}-#{VERSION}'
+  DEPENDENCIES:
+  - 'github.com/mitchellh/gox'
+  - 'github.com/russross/blackfriday'
+  - 'gopkg.in/yaml.v2'
+
+targets:
+
+  deps:
+    doc: Install Go dependencies
+    steps:
+    - for: 'dependency'
+      in:  'DEPENDENCIES'
+      do:
+      - print: 'Getting dependency #{dependency}...'
+      - 'go get "#{dependency}"'
+
+  test:
+    doc: Run Go tests
+    steps:
+    - mkdir: '#{BUILD_DIR}'
+    - 'go run #{NAME}.go -o #{BUILD_DIR}/example.pdf -i #{TEST_DIR} #{TEST_DIR}/example.md'
+
+  build:
+    doc: Build Go application
+    steps:
+    - mkdir: '#{BUILD_DIR}'
+    - 'go build -o #{BUILD_DIR}/#{NAME}'
+
+  archive:
+    doc: Build distribution archive
+    steps:
+    - mkdir: '#{BUILD_DIR}/#{NAME}-#{VERSION}/bin/'
+    - 'gox -output=#{ARC_DIR}/bin/{{.Dir}}_{{.OS}}_{{.Arch}}'
+    - copy:
+      - 'README.md'
+      - 'CHANGELOG.yml'
+      - 'LICENSE.txt'
+      todir: '#{ARC_DIR}'
+    - tar: '**/*'
+      dir: '#{ARC_DIR}'
+      prefix: '#{NAME}-#{VERSION}'
+      to: '#{BUILD_DIR}/#{NAME}-#{VERSION}.tar.gz'
+
+  release:
+    doc: Make a release
+    depends: [clean, test, archive]
+    steps:
+    - 'release'
+
+  clean:
+    doc: Clean generated files
+    steps:
+    - delete: '#{BUILD_DIR}'
