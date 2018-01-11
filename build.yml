@@ -1,6 +1,6 @@
 # NeON build file (http://github.com/c4s4/neon)
 
-extends: c4s4/build/go-tool.yml
+extends: c4s4/build/golang.yml
 
 properties:
   TEST_DIR: 'test'
@@ -14,5 +14,6 @@ targets:
   test:
     doc: Run Go tests
     steps:
-    - mkdir: '#{BUILD_DIR}'
-    - 'go run #{NAME}.go -o #{BUILD_DIR}/example.pdf -i #{TEST_DIR} #{TEST_DIR}/example.md'
+    - mkdir: =BUILD_DIR
+    - $: ['go', 'run', '={NAME}.go', '-o', '={BUILD_DIR}/example.pdf',
+          '-i', '={TEST_DIR}', '={TEST_DIR}/example.md']
