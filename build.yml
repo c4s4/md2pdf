@@ -5,6 +5,7 @@ extends:
 - c4s4/build/release.yml
 
 properties:
+  NAME:     'md2pdf'
   TEST_DIR: 'test'
   LIBRARIES:
   - 'github.com/mitchellh/gox'
