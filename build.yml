@@ -1,0 +1,22 @@
+# NeON build file (http://github.com/c4s4/neon)
+
+extends:
+- c4s4/build/golang.yml
+- c4s4/build/release.yml
+
+properties:
+  NAME:     'md2pdf'
+  TEST_DIR: 'test'
+  LIBRARIES:
+  - 'github.com/mitchellh/gox'
+  - 'github.com/russross/blackfriday'
+  - 'gopkg.in/yaml.v2'
+
+targets:
+
+  test:
+    doc: Run Go tests
+    steps:
+    - mkdir: =BUILD_DIR
+    - $: ['go', 'run', '={NAME}.go', '-o', '={BUILD_DIR}/example.pdf',
+          '-i', '={TEST_DIR}', '={TEST_DIR}/example.md']

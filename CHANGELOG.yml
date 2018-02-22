@@ -1,5 +1,9 @@
 # Semantic Change Log
 
+- version: 2.1.1
+  date:    2018-02-22
+  summary: Added NeON build file and fixed warnings
+
 - version: 2.1.0
   date:    2016-04-05
   summary: Using BlackFriday Go library instead of pandoc

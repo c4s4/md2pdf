@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	HELP = `md2pdf [-h] [-x] [-s] [-t] [-i dir] [-o file] file.md
+	help = `md2pdf [-h] [-x] [-s] [-t] [-i dir] [-o file] file.md
 Transform a given Markdown file into PDF.
 -h        To print this help page.
 -x        Print intermediate XHTML output.
@@ -26,7 +26,7 @@ file.md   The markdown file to convert.
 Note:
 This program calls pandoc, xsltproc, htmldoc and faketime that must have been
 installed.`
-	STYLESHEET = `<?xml version="1.0" encoding="utf-8"?>
+	stylesheet = `<?xml version="1.0" encoding="utf-8"?>
 
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 version="1.0">
@@ -110,16 +110,14 @@ installed.`
   </xsl:template>
 
 </xsl:stylesheet>`
-	XHTML_HEADER = "<xhtml>\n<body>\n"
-	XHTML_FOOTER = "</body>\n</xhtml>"
 )
 
-type MetaData struct {
+type metaData struct {
 	Title  string
 	Author string
 	Date   string
 	Tags   []string
-	Id     string
+	ID     string
 	Email  string
 	Lang   string
 	Toc    string
@@ -139,12 +137,11 @@ func executeCommand(command *exec.Cmd) []byte {
 		println(string(result))
 		os.Exit(1)
 		return []byte{}
-	} else {
-		return result
 	}
+	return result
 }
 
-func (d MetaData) ToMap() map[string]string {
+func (d metaData) ToMap() map[string]string {
 	data := make(map[string]string)
 	if d.Title != "" {
 		data["title"] = d.Title
@@ -158,8 +155,8 @@ func (d MetaData) ToMap() map[string]string {
 	if len(d.Tags) != 0 {
 		data["tags"] = strings.Join(d.Tags, ", ")
 	}
-	if d.Id != "" {
-		data["id"] = d.Id
+	if d.ID != "" {
+		data["id"] = d.ID
 	}
 	if d.Email != "" {
 		data["email"] = d.Email
@@ -173,7 +170,7 @@ func (d MetaData) ToMap() map[string]string {
 	return data
 }
 
-var LOCALE = map[string]string{
+var locales = map[string]string{
 	"fr": "fr_FR.UTF-8",
 	"en": "en_US.UTF-8",
 }
@@ -181,7 +178,7 @@ var LOCALE = map[string]string{
 func processXsl(tmpFile string, data map[string]string) {
 	xslFile, err := ioutil.TempFile("/tmp", "md2pdf-")
 	printError(err, "Error creating XSL temporary file")
-	err = ioutil.WriteFile(xslFile.Name(), []byte(STYLESHEET), 0644)
+	err = ioutil.WriteFile(xslFile.Name(), []byte(stylesheet), 0644)
 	printError(err, "Error writing XSL temporary file")
 	defer os.Remove(xslFile.Name())
 	params := make([]string, 0, 2+3*len(data))
@@ -216,8 +213,8 @@ func markdown2xhtml(markdown string) []byte {
 	return []byte("<xhtml>\n<body>\n\n" + string(output) + "\n</body>\n</xhtml>")
 }
 
-func markdownData(text string) (MetaData, string) {
-	var data MetaData
+func markdownData(text string) (metaData, string) {
+	var data metaData
 	r := regexp.MustCompile("(?ms)\\A---.*?(---|\\.\\.\\.)")
 	yml := r.FindString(text)
 	if yml == "" {
@@ -279,17 +276,17 @@ func generatePdf(xhtmlFile, outFile string, data map[string]string) {
 	env := os.Environ()
 	for i, e := range env {
 		if strings.HasPrefix(e, "LANG") {
-			env[i] = "LANG=" + LOCALE[data["lang"]]
+			env[i] = "LANG=" + locales[data["lang"]]
 		}
 		if strings.HasPrefix(e, "LC_ALL") {
-			env[i] = "LC_ALL=" + LOCALE[data["lang"]]
+			env[i] = "LC_ALL=" + locales[data["lang"]]
 		}
 	}
 	command.Env = env
 	executeCommand(command)
 }
 
-func processFile(filename string, printXhtml, printHtml bool, imgDir, outFile string) {
+func processFile(filename string, printXHTML, printHTML bool, imgDir, outFile string) {
 	source, err := ioutil.ReadFile(filename)
 	printError(err, "Error reading file")
 	data, markdown := markdownData(string(source))
@@ -299,7 +296,7 @@ func processFile(filename string, printXhtml, printHtml bool, imgDir, outFile st
 		markdown = absoluteDir(markdown, filename)
 	}
 	xhtml := markdown2xhtml(markdown)
-	if printXhtml {
+	if printXHTML {
 		fmt.Println(string(xhtml))
 		return
 	}
@@ -308,7 +305,7 @@ func processFile(filename string, printXhtml, printHtml bool, imgDir, outFile st
 	defer os.Remove(tmpFile.Name())
 	ioutil.WriteFile(tmpFile.Name(), xhtml, 0644)
 	processXsl(tmpFile.Name(), data.ToMap())
-	if printHtml {
+	if printHTML {
 		source, err := ioutil.ReadFile(tmpFile.Name())
 		printError(err, "Error reading temporary file")
 		fmt.Println(string(source))
@@ -320,6 +317,15 @@ func processFile(filename string, printXhtml, printHtml bool, imgDir, outFile st
 	generatePdf(tmpFile.Name(), outFile, data.ToMap())
 }
 
+func valueIn(value string, list []string) bool {
+	for _, v := range list {
+		if v == value {
+			return true
+		}
+	}
+	return false
+}
+
 func main() {
 	xhtml := false
 	html := false
@@ -327,7 +333,7 @@ func main() {
 	outFile := ""
 	file := ""
 	if len(os.Args) < 2 {
-		fmt.Println(HELP)
+		fmt.Println(help)
 		os.Exit(1)
 	}
 	skip := false
@@ -337,25 +343,33 @@ func main() {
 			skip = false
 			continue
 		}
-		if arg == "-h" || arg == "--help" {
-			fmt.Println(HELP)
+		if valueIn(arg, []string{"-h", "--help"}) {
+			fmt.Println(help)
 			os.Exit(0)
-		} else if arg == "-x" || arg == "--xhtml" {
+		}
+		if valueIn(arg, []string{"-x", "--xhtml"}) {
 			xhtml = true
-		} else if arg == "-s" || arg == "--stylesheet" {
-			fmt.Println(STYLESHEET)
+			continue
+		}
+		if valueIn(arg, []string{"-s", "--stylesheet"}) {
+			fmt.Println(stylesheet)
 			os.Exit(0)
-		} else if arg == "-t" || arg == "--html" {
+		}
+		if valueIn(arg, []string{"-t", "--html"}) {
 			html = true
-		} else if arg == "-i" || arg == "--image-dir" {
+			continue
+		}
+		if valueIn(arg, []string{"-i", "--image-dir"}) {
 			imgDir = args[i+1]
 			skip = true
-		} else if arg == "-o" || arg == "--output-file" {
+			continue
+		}
+		if valueIn(arg, []string{"-o", "--output-file"}) {
 			outFile = args[i+1]
 			skip = true
-		} else {
-			file = arg
+			continue
 		}
+		file = arg
 	}
 	processFile(file, xhtml, html, imgDir, outFile)
 }
