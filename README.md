@@ -1,6 +1,18 @@
 MD2PDF
 ======
 
+<!--
+[![Build Status](https://travis-ci.org/c4s4/md2pdf.svg?branch=master)](https://travis-ci.org/c4s4/md2pdf)
+-->
+[![Code Quality](https://goreportcard.com/badge/github.com/c4s4/md2pdf)](https://goreportcard.com/report/github.com/c4s4/md2pdf)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+<!--
+[![Coverage Report](https://coveralls.io/repos/github/c4s4/md2pdf/badge.svg?branch=master)](https://coveralls.io/github/c4s4/md2pdf?branch=master)
+-->
+
+- Project :   <https://github.com/c4s4/md2pdf>.
+- Downloads : <https://github.com/c4s4/md2pdf/releases>.
+
 md2pdf is a tool to convert [Markdown](https://en.wikipedia.org/wiki/Markdown)
 documents to PDF, without using LaTeX.
 
