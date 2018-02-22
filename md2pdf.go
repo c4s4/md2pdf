@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	HELP = `md2pdf [-h] [-x] [-s] [-t] [-i dir] [-o file] file.md
+	Help = `md2pdf [-h] [-x] [-s] [-t] [-i dir] [-o file] file.md
 Transform a given Markdown file into PDF.
 -h        To print this help page.
 -x        Print intermediate XHTML output.
@@ -26,7 +26,7 @@ file.md   The markdown file to convert.
 Note:
 This program calls pandoc, xsltproc, htmldoc and faketime that must have been
 installed.`
-	STYLESHEET = `<?xml version="1.0" encoding="utf-8"?>
+	Stylesheet = `<?xml version="1.0" encoding="utf-8"?>
 
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 version="1.0">
@@ -110,8 +110,6 @@ installed.`
   </xsl:template>
 
 </xsl:stylesheet>`
-	XHTML_HEADER = "<xhtml>\n<body>\n"
-	XHTML_FOOTER = "</body>\n</xhtml>"
 )
 
 type MetaData struct {
@@ -181,7 +179,7 @@ var LOCALE = map[string]string{
 func processXsl(tmpFile string, data map[string]string) {
 	xslFile, err := ioutil.TempFile("/tmp", "md2pdf-")
 	printError(err, "Error creating XSL temporary file")
-	err = ioutil.WriteFile(xslFile.Name(), []byte(STYLESHEET), 0644)
+	err = ioutil.WriteFile(xslFile.Name(), []byte(Stylesheet), 0644)
 	printError(err, "Error writing XSL temporary file")
 	defer os.Remove(xslFile.Name())
 	params := make([]string, 0, 2+3*len(data))
@@ -320,6 +318,15 @@ func processFile(filename string, printXhtml, printHtml bool, imgDir, outFile st
 	generatePdf(tmpFile.Name(), outFile, data.ToMap())
 }
 
+func valueIn(value string, list []string) bool {
+	for _, v := range list {
+		if v == value {
+			return true
+		}
+	}
+	return false
+}
+
 func main() {
 	xhtml := false
 	html := false
@@ -327,7 +334,7 @@ func main() {
 	outFile := ""
 	file := ""
 	if len(os.Args) < 2 {
-		fmt.Println(HELP)
+		fmt.Println(Help)
 		os.Exit(1)
 	}
 	skip := false
@@ -337,25 +344,33 @@ func main() {
 			skip = false
 			continue
 		}
-		if arg == "-h" || arg == "--help" {
-			fmt.Println(HELP)
+		if valueIn(arg, []string{"-h", "--help"}) {
+			fmt.Println(Help)
 			os.Exit(0)
-		} else if arg == "-x" || arg == "--xhtml" {
+		}
+		if valueIn(arg, []string{"-x", "--xhtml"}) {
 			xhtml = true
-		} else if arg == "-s" || arg == "--stylesheet" {
-			fmt.Println(STYLESHEET)
+			continue
+		}
+		if valueIn(arg, []string{"-s", "--stylesheet"}) {
+			fmt.Println(Stylesheet)
 			os.Exit(0)
-		} else if arg == "-t" || arg == "--html" {
+		}
+		if valueIn(arg, []string{"-t", "--html"}) {
 			html = true
-		} else if arg == "-i" || arg == "--image-dir" {
+			continue
+		}
+		if valueIn(arg, []string{"-i", "--image-dir"}) {
 			imgDir = args[i+1]
 			skip = true
-		} else if arg == "-o" || arg == "--output-file" {
+			continue
+		}
+		if valueIn(arg, []string{"-o", "--output-file"}) {
 			outFile = args[i+1]
 			skip = true
-		} else {
-			file = arg
+			continue
 		}
+		file = arg
 	}
 	processFile(file, xhtml, html, imgDir, outFile)
 }
