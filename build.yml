@@ -8,10 +8,13 @@ properties:
   NAME:     'md2pdf'
   TEST_DIR: 'test'
   LIBRARIES:
-  - 'github.com/mitchellh/gox'
   - 'github.com/russross/blackfriday'
   - 'gopkg.in/yaml.v2'
-
+  - 'github.com/mitchellh/gox'
+  - 'github.com/fzipp/gocyclo'
+  - 'golang.org/x/lint/golint'
+  - 'github.com/gordonklaus/ineffassign'
+  - 'github.com/client9/misspell/cmd/misspell'
 targets:
 
   test:
@@ -20,3 +23,9 @@ targets:
     - mkdir: =BUILD_DIR
     - $: ['go', 'run', '={NAME}.go', '-o', '={BUILD_DIR}/example.pdf',
           '-i', '={TEST_DIR}', '={TEST_DIR}/example.md']
+
+  release:
+    doc: Perform a release
+    depends: [clean, check, test, archive]
+    steps:
+    - super:
