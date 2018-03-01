@@ -1,4 +1,4 @@
-# NeON build file (http://github.com/c4s4/neon)
+# NeON Build File (http://github.com/c4s4/neon)
 
 extends:
 - c4s4/build/golang.yml
@@ -15,6 +15,7 @@ properties:
   - 'golang.org/x/lint/golint'
   - 'github.com/gordonklaus/ineffassign'
   - 'github.com/client9/misspell/cmd/misspell'
+
 targets:
 
   test:
