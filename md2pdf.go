@@ -15,17 +15,16 @@ import (
 
 const (
 	help = `md2pdf [-h] [-x] [-s] [-t] [-i dir] [-o file] file.md
-Transform a given Markdown file into PDF.
--h        To print this help page.
--x        Print intermediate XHTML output.
--s        Print stylesheet used for transformation.
--t        Print html output.
--i dir    To indicate image directory.
--o file   The name of the file to output.
-file.md   The markdown file to convert.
+Transform a given Markdown file to PDF:
+-h        To print this help page
+-x        Print intermediate XHTML output
+-s        Print stylesheet used for transformation
+-t        Print html output
+-i dir    To indicate image directory
+-o file   The name of the file to output
+file.md   The markdown file to convert
 Note:
-This program calls pandoc, xsltproc, htmldoc and faketime that must have been
-installed.`
+This program calls xsltproc, htmldoc and faketime that must have been installed`
 	stylesheet = `<?xml version="1.0" encoding="utf-8"?>
 
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
