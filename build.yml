@@ -1,8 +1,6 @@
 # NeON Build File (http://github.com/c4s4/neon)
 
-extends:
-- c4s4/build/golang.yml
-- c4s4/build/release.yml
+extends: [golang, git-master]
 
 properties:
   NAME:     'md2pdf'
@@ -10,11 +8,6 @@ properties:
   LIBRARIES:
   - 'github.com/russross/blackfriday'
   - 'gopkg.in/yaml.v2'
-  - 'github.com/mitchellh/gox'
-  - 'github.com/fzipp/gocyclo'
-  - 'golang.org/x/lint/golint'
-  - 'github.com/gordonklaus/ineffassign'
-  - 'github.com/client9/misspell/cmd/misspell'
 
 targets:
 
