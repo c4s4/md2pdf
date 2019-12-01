@@ -1,9 +1,11 @@
-# NeON Build File (http://github.com/c4s4/neon)
+# NeON build file (http://github.com/c4s4/neon)
 
-extends: [golang, git-master]
+extends: golang
+default: [fmt, check, test]
+expose:  [fmt, check, test, release]
+configuration: .build.yml
 
 properties:
-  NAME:     'md2pdf'
   TEST_DIR: 'test'
   LIBRARIES:
   - 'github.com/russross/blackfriday'
@@ -17,9 +19,3 @@ targets:
     - mkdir: =BUILD_DIR
     - $: ['go', 'run', '={NAME}.go', '-o', '={BUILD_DIR}/example.pdf',
           '-i', '={TEST_DIR}', '={TEST_DIR}/example.md']
-
-  release:
-    doc: Perform a release
-    depends: [clean, check, test, archive]
-    steps:
-    - super:

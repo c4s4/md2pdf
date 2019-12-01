@@ -13,6 +13,9 @@ import (
 	"time"
 )
 
+// Version as printed with -v option on command line
+var Version = "UNKNOWN"
+
 const (
 	help = `md2pdf [-h] [-x] [-s] [-t] [-i dir] [-o file] file.md
 Transform a given Markdown file to PDF:
@@ -367,6 +370,10 @@ func main() {
 			outFile = args[i+1]
 			skip = true
 			continue
+		}
+		if valueIn(arg, []string{"-v", "--version"}) {
+			fmt.Println(Version)
+			os.Exit(1)
 		}
 		file = arg
 	}
