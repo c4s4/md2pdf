@@ -17,9 +17,10 @@ import (
 var Version = "UNKNOWN"
 
 const (
-	help = `md2pdf [-h] [-x] [-s] [-t] [-i dir] [-o file] file.md
+	help = `md2pdf [-h] [-v] [-x] [-s] [-t] [-i dir] [-o file] file.md
 Transform a given Markdown file to PDF:
 -h        To print this help page
+-v        Print version and exit
 -x        Print intermediate XHTML output
 -s        Print stylesheet used for transformation
 -t        Print html output
