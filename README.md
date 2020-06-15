@@ -32,13 +32,13 @@ distribution, you can type following commands :
 Unix users may download and install latest *md2pdf* release with command:
 
 ```bash
-sh -c "$(curl http://sweetohm.net/dist/md2pdf/install)"
+sh -c "$(curl https://sweetohm.net/dist/md2pdf/install)"
 ```
 
 If *curl* is not installed on you system, you might run:
 
 ```bash
-sh -c "$(wget -O - http://sweetohm.net/dist/md2pdf/install)"
+sh -c "$(wget -O - https://sweetohm.net/dist/md2pdf/install)"
 ```
 
 **Note:** Some directories are protected, even as *root*, on **MacOSX** (since *El Capitan* release), thus you can't install *md2pdf* in */usr/bin* for instance.
