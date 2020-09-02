@@ -124,6 +124,7 @@ type metaData struct {
 	Email  string
 	Lang   string
 	Toc    string
+	Logo   string
 }
 
 func printError(err error, message string) {
@@ -169,6 +170,9 @@ func (d metaData) ToMap() map[string]string {
 	}
 	if d.Toc != "" {
 		data["toc"] = d.Toc
+	}
+	if d.Logo != "" {
+		data["logo"] = d.Logo
 	}
 	return data
 }
@@ -260,7 +264,6 @@ func generatePdf(xhtmlFile, outFile string, data map[string]string) {
 		"--right", "2cm",
 		"--bodyfont", "Times",
 		"--fontsize", "12",
-		"--header", "...",
 		"--footer", "dt1",
 		"--headfootfont", "Courier-Oblique",
 		"--headfootsize", "10",
@@ -273,8 +276,14 @@ func generatePdf(xhtmlFile, outFile string, data map[string]string) {
 		"--compression=9",
 		"--embedfonts",
 		"--webpage",
-		xhtmlFile,
 	}
+	if data["logo"] == "" {
+		params = append(params, "--header", "...")
+	} else {
+		params = append(params, "--header", "t.l")
+		params = append(params, "--logoimage", data["logo"])
+	}
+	params = append(params, xhtmlFile)
 	command := exec.Command("faketime", params...)
 	env := os.Environ()
 	for i, e := range env {

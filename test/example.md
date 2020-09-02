@@ -6,13 +6,12 @@ id:       1
 email:    michel.casabianca@gmail.com
 lang:     en
 toc:      false
+logo:     test/omega.png
 ---
 
-Title first level
-=================
+# Title first level
 
-Title second level
-------------------
+## Title second level
 
 Text with *italic*, **bold**, `constant width`. Other _italic_, __bold__ with
 underscores.
