@@ -100,6 +100,7 @@ document, as used by *pandoc* tool, such as :
     id:       1
 	lang:     en
 	toc:      true
+    logo:     logo.png
     ---
 
 These headers are used by the tools to print information at the beginning of
@@ -115,6 +116,7 @@ the document and in page footer:
   *en*).
 - **toc**: tells if we want a table of content in resulting document (defaults
   to *false*).
+- **logo**: logo image inserted in header on the right.
 
 Note that these headers are not mandatory.
 
