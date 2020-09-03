@@ -6,7 +6,8 @@ id:       1
 email:    michel.casabianca@gmail.com
 lang:     en
 toc:      false
-logo:     test/omega.png
+logo:     omega.png
+header:   l..
 ---
 
 # Title first level

@@ -125,6 +125,8 @@ type metaData struct {
 	Lang   string
 	Toc    string
 	Logo   string
+	Header string
+	Footer string
 }
 
 func printError(err error, message string) {
@@ -173,6 +175,12 @@ func (d metaData) ToMap() map[string]string {
 	}
 	if d.Logo != "" {
 		data["logo"] = d.Logo
+	}
+	if d.Header != "" {
+		data["header"] = d.Header
+	}
+	if d.Footer != "" {
+		data["footer"] = d.Footer
 	}
 	return data
 }
@@ -246,7 +254,7 @@ func absoluteDir(text, filename string) string {
 	return r.ReplaceAllString(text, "![$1]("+absDir+"/$2)")
 }
 
-func generatePdf(xhtmlFile, outFile string, data map[string]string) {
+func generatePdf(fileDir, xhtmlFile, outFile string, data map[string]string) {
 	if data["date"] == "" {
 		data["date"] = time.Now().Local().Format("20060102")
 	}
@@ -264,7 +272,6 @@ func generatePdf(xhtmlFile, outFile string, data map[string]string) {
 		"--right", "2cm",
 		"--bodyfont", "Times",
 		"--fontsize", "12",
-		"--footer", "dt1",
 		"--headfootfont", "Courier-Oblique",
 		"--headfootsize", "10",
 		"--linkcolor", "#0000A0",
@@ -277,11 +284,23 @@ func generatePdf(xhtmlFile, outFile string, data map[string]string) {
 		"--embedfonts",
 		"--webpage",
 	}
-	if data["logo"] == "" {
-		params = append(params, "--header", "...")
+	if data["header"] != "" {
+		params = append(params, "--header", data["header"])
 	} else {
-		params = append(params, "--header", "t.l")
-		params = append(params, "--logoimage", data["logo"])
+		params = append(params, "--header", "...")
+	}
+	if data["footer"] != "" {
+		params = append(params, "--footer", data["footer"])
+	} else {
+		params = append(params, "--footer", "dt1")
+
+	}
+ 	if data["logo"] != "" {
+		file := data["logo"]
+		if !filepath.IsAbs(file) {
+			file = filepath.Join(fileDir, file)
+		}
+		params = append(params, "--logoimage", file)
 	}
 	params = append(params, xhtmlFile)
 	command := exec.Command("faketime", params...)
@@ -326,7 +345,8 @@ func processFile(filename string, printXHTML, printHTML bool, imgDir, outFile st
 	if len(outFile) == 0 {
 		outFile = filename[0:len(filename)-len(filepath.Ext(filename))] + ".pdf"
 	}
-	generatePdf(tmpFile.Name(), outFile, data.ToMap())
+	fileDir := filepath.Dir(filename)
+	generatePdf(fileDir, tmpFile.Name(), outFile, data.ToMap())
 }
 
 func valueIn(value string, list []string) bool {

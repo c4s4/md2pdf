@@ -101,6 +101,8 @@ document, as used by *pandoc* tool, such as :
 	lang:     en
 	toc:      true
     logo:     logo.png
+    header:   ...
+    footer:   dt1
     ---
 
 These headers are used by the tools to print information at the beginning of
@@ -116,7 +118,9 @@ the document and in page footer:
   *en*).
 - **toc**: tells if we want a table of content in resulting document (defaults
   to *false*).
-- **logo**: logo image inserted in header on the right.
+- **logo**: logo image inserted in header or footer of the PDF document (you must modify header or footer accordingly with *l* field).
+- **header**: header in PDF document (see description [in HTMLDOC documentation](https://www.msweet.org/htmldoc/htmldoc.html#footer).
+- **footer**: footer in PDF document (see description [in HTMLDOC documentation](https://www.msweet.org/htmldoc/htmldoc.html#footer).
 
 Note that these headers are not mandatory.
 
