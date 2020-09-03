@@ -2,8 +2,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/russross/blackfriday"
-	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -11,6 +9,9 @@ import (
 	"regexp"
 	"strings"
 	"time"
+
+	"github.com/russross/blackfriday"
+	"gopkg.in/yaml.v2"
 )
 
 // Version as printed with -v option on command line
@@ -127,6 +128,7 @@ type metaData struct {
 	Logo   string
 	Header string
 	Footer string
+	Margin string
 }
 
 func printError(err error, message string) {
@@ -181,6 +183,9 @@ func (d metaData) ToMap() map[string]string {
 	}
 	if d.Footer != "" {
 		data["footer"] = d.Footer
+	}
+	if d.Margin != "" {
+		data["margin"] = d.Margin
 	}
 	return data
 }
@@ -266,10 +271,6 @@ func generatePdf(fileDir, xhtmlFile, outFile string, data map[string]string) {
 		"htmldoc",
 		"--outfile", outFile,
 		"--size", "A4",
-		"--top", "2cm",
-		"--bottom", "2cm",
-		"--left", "2cm",
-		"--right", "2cm",
 		"--bodyfont", "Times",
 		"--fontsize", "12",
 		"--headfootfont", "Courier-Oblique",
@@ -301,6 +302,18 @@ func generatePdf(fileDir, xhtmlFile, outFile string, data map[string]string) {
 			file = filepath.Join(fileDir, file)
 		}
 		params = append(params, "--logoimage", file)
+	}
+	if data["margin"] != "" {
+		margins := strings.Split(data["margin"], ",")
+		params = append(params, "--top", margins[0]+"cm")
+		params = append(params, "--right", margins[1]+"cm")
+		params = append(params, "--bottom", margins[2]+"cm")
+		params = append(params, "--left", margins[3]+"cm")
+	} else {
+		params = append(params, "--top", "2cm")
+		params = append(params, "--right", "2cm")
+		params = append(params, "--bottom", "2cm")
+		params = append(params, "--left", "2cm")
 	}
 	params = append(params, xhtmlFile)
 	command := exec.Command("faketime", params...)

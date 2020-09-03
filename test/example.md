@@ -7,7 +7,8 @@ email:    michel.casabianca@gmail.com
 lang:     en
 toc:      false
 logo:     omega.png
-header:   l..
+header:   l.u
+margin:   1.5,2,2,2
 ---
 
 # Title first level
