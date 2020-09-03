@@ -119,8 +119,8 @@ the document and in page footer:
 - **toc**: tells if we want a table of content in resulting document (defaults
   to *false*).
 - **logo**: logo image inserted in header or footer of the PDF document (you must modify header or footer accordingly with *l* field).
-- **header**: header in PDF document (see description [in HTMLDOC documentation](https://www.msweet.org/htmldoc/htmldoc.html#footer).
-- **footer**: footer in PDF document (see description [in HTMLDOC documentation](https://www.msweet.org/htmldoc/htmldoc.html#footer).
+- **header**: header in PDF document (see description [in HTMLDOC documentation](https://www.msweet.org/htmldoc/htmldoc.html#footer)).
+- **footer**: footer in PDF document (see description [in HTMLDOC documentation](https://www.msweet.org/htmldoc/htmldoc.html#footer)).
 - **margins**: PDF document margins in cm for top, right, bottom and left, coma separated (thus *1,2,3,4* for instance).
 
 Note that these headers are not mandatory.
