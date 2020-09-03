@@ -295,7 +295,7 @@ func generatePdf(fileDir, xhtmlFile, outFile string, data map[string]string) {
 		params = append(params, "--footer", "dt1")
 
 	}
- 	if data["logo"] != "" {
+	if data["logo"] != "" {
 		file := data["logo"]
 		if !filepath.IsAbs(file) {
 			file = filepath.Join(fileDir, file)
