@@ -38,6 +38,8 @@ Source code:
 
     println("Hello World!")
 
+> Bloc quote
+
 Some special XML characters: < & > " '.
 
 Now, a table:
