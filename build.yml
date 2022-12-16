@@ -20,3 +20,5 @@ targets:
     - mkdir: =BUILD_DIR
     - $: ['go', 'run', '={NAME}.go', '-o', '={BUILD_DIR}/example.pdf',
           '-i', '={TEST_DIR}', '={TEST_DIR}/example.md']
+    - $: ['go', 'run', '={NAME}.go', '-o', '={BUILD_DIR}/example2.pdf',
+          '-i', '={TEST_DIR}', '={TEST_DIR}/example2.md']

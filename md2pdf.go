@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -117,18 +116,22 @@ This program calls xsltproc, htmldoc and faketime that must have been installed`
 )
 
 type metaData struct {
-	Title  string
-	Author string
-	Date   string
-	Tags   []string
-	ID     string
-	Email  string
-	Lang   string
-	Toc    string
-	Logo   string
-	Header string
-	Footer string
-	Margin string
+	Title   string
+	Author  string
+	Date    string
+	Tags    []string
+	ID      string
+	Email   string
+	Lang    string
+	Toc     string
+	Logo    string
+	Header  string
+	Footer  string
+	Margin  string
+	Authors []struct {
+		Name  string
+		Email string
+	}
 }
 
 func printError(err error, message string) {
@@ -157,6 +160,15 @@ func (d metaData) ToMap() map[string]string {
 	if d.Author != "" {
 		data["author"] = d.Author
 	}
+	if d.Email != "" {
+		data["email"] = d.Email
+	}
+	if len(d.Authors) > 0 {
+		data["author"] = d.Authors[0].Name
+		if d.Authors[0].Email != "" {
+			data["email"] = d.Authors[0].Email
+		}
+	}
 	if d.Date != "" {
 		data["date"] = d.Date
 	}
@@ -165,9 +177,6 @@ func (d metaData) ToMap() map[string]string {
 	}
 	if d.ID != "" {
 		data["id"] = d.ID
-	}
-	if d.Email != "" {
-		data["email"] = d.Email
 	}
 	if d.Lang != "" {
 		data["lang"] = d.Lang
@@ -196,9 +205,9 @@ var locales = map[string]string{
 }
 
 func processXsl(tmpFile string, data map[string]string) {
-	xslFile, err := ioutil.TempFile("/tmp", "md2pdf-")
+	xslFile, err := os.CreateTemp("/tmp", "md2pdf-")
 	printError(err, "Error creating XSL temporary file")
-	err = ioutil.WriteFile(xslFile.Name(), []byte(stylesheet), 0644)
+	err = os.WriteFile(xslFile.Name(), []byte(stylesheet), 0644)
 	printError(err, "Error writing XSL temporary file")
 	defer os.Remove(xslFile.Name())
 	params := make([]string, 0, 2+3*len(data))
@@ -211,7 +220,7 @@ func processXsl(tmpFile string, data map[string]string) {
 	params = append(params, tmpFile)
 	command := exec.Command("xsltproc", params...)
 	result := executeCommand(command)
-	err = ioutil.WriteFile(tmpFile, result, 0644)
+	err = os.WriteFile(tmpFile, result, 0644)
 	printError(err, "Error writing temporary file")
 }
 
@@ -235,7 +244,7 @@ func markdown2xhtml(markdown string) []byte {
 
 func markdownData(text string) (metaData, string) {
 	var data metaData
-	r := regexp.MustCompile("(?ms)\\A---.*?(---|\\.\\.\\.)")
+	r := regexp.MustCompile(`(?ms)\A---.*?(---|\.\.\.)`)
 	yml := r.FindString(text)
 	if yml == "" {
 		return data, text
@@ -331,7 +340,7 @@ func generatePdf(fileDir, xhtmlFile, outFile string, data map[string]string) {
 }
 
 func processFile(filename string, printXHTML, printHTML bool, imgDir, outFile string) {
-	source, err := ioutil.ReadFile(filename)
+	source, err := os.ReadFile(filename)
 	printError(err, "Error reading file")
 	data, markdown := markdownData(string(source))
 	if imgDir != "" {
@@ -344,13 +353,14 @@ func processFile(filename string, printXHTML, printHTML bool, imgDir, outFile st
 		fmt.Println(string(xhtml))
 		return
 	}
-	tmpFile, err := ioutil.TempFile("/tmp", "md2pdf-")
+	tmpFile, err := os.CreateTemp("/tmp", "md2pdf-")
 	printError(err, "Error creating temporary file")
 	defer os.Remove(tmpFile.Name())
-	ioutil.WriteFile(tmpFile.Name(), xhtml, 0644)
+	err = os.WriteFile(tmpFile.Name(), xhtml, 0644)
+	printError(err, "Error writing xhtml file")
 	processXsl(tmpFile.Name(), data.ToMap())
 	if printHTML {
-		source, err := ioutil.ReadFile(tmpFile.Name())
+		source, err := os.ReadFile(tmpFile.Name())
 		printError(err, "Error reading temporary file")
 		fmt.Println(string(source))
 		return

@@ -95,8 +95,8 @@ document, as used by *pandoc* tool, such as :
     ---
     title:    Document title
     author:   Michel Casabianca
-    date:     2014-06-09
     email:    michel.casabianca@gmail.com
+    date:     2014-06-09
     id:       1
 	lang:     en
 	toc:      true
